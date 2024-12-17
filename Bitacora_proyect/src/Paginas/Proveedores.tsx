@@ -1,23 +1,11 @@
-import Header from '../components/Header';
-import Proveedortable from '../components/TablaProveedor';
-import Sidebar from '../components/Sidebar';
-import Footer from '../components/Footer';
-import { Button, Container } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import Proveedortable from '../components/Tablas/TablaProveedor';
+import Layout from '../components/Layout/Layout';
+import '../components/Layout/estilos.css'
 
 export const Proveedores = () => {
-  const navigate = useNavigate()
   return (
-    <>
-      <Header />
-      <Sidebar />
-      <main className='main' id='main'>
-        <Container className='d-flex justify-content-end'>
-        <Button size='sm' type='button' className='btn btn-secondary' onClick={() => navigate('/CrearProveedor')}>Crear Proveedor <i className="bi bi-arrow-right ms-1"/>  </Button>
-        </Container>
-        <Proveedortable/>
-      </main>
-      <Footer/>
-    </>
+    <Layout>
+      <Proveedortable />
+    </Layout>
   )
 }

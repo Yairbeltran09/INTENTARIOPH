@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/motivoreporte';
+const API_URL = 'http://localhost:8080/api/motivos';
 
 export const getMotivos = async () => {
   try {

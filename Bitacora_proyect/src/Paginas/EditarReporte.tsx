@@ -1,8 +1,8 @@
 
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
-import Footer from '../components/Footer';
-import FormularioEditarReporte from '../components/FormularioEditarR';
+import Header from '../components/Header/Header';
+import Sidebar from '../components/Sidebar/Sidebar';
+import Footer from '../components/footer/Footer';
+import FormularioEditarReporte from '../components/FormulariosEditar.tsx/FormularioEditarR';
 
 export const EditarReporte = () => {
   return (

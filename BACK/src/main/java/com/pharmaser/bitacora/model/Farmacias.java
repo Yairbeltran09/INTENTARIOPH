@@ -20,10 +20,6 @@ public class Farmacias {
     @JoinColumn(name = "ciudad")
     private Ciudades ciudad;
 
-    @ManyToOne
-    @JoinColumn(name = "departamento")
-    private Departamentos departamento;
-
     private String pertenece;
 
     @ManyToOne
@@ -114,9 +110,7 @@ public class Farmacias {
         this.coordenadas = coordenadas;
     }
 
-    public Departamentos getDepartamento() {
-        return departamento;
-    }
+
 
     public String getAnchoBAnda() {
         return anchoBAnda;
@@ -143,7 +137,4 @@ public class Farmacias {
         isDeleted = isDeleted;
     }
 
-    public void setDepartamento(Departamentos departamento) {
-        this.departamento = departamento;
-    }
 }

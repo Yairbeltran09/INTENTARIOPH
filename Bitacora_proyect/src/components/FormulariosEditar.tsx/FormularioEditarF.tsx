@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { getCiudades, getProveedores, getCanalesTransmision, createFarmacia } from '../servicios/api';
+import { getFarmaciaById, updateFarmacia, getCiudades, getProveedores, getCanalesTransmision } from '../../servicios/api';
 
 interface Ciudad {
   id: number;
@@ -21,11 +22,14 @@ interface CanalTransmision {
   nombre: string;
 }
 
-function FormularioCrearF() {
+function FormularioEditarF() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [canalesTransmision, setCanalesTransmision] = useState<CanalTransmision[]>([]);
-  
+
   const [formData, setFormData] = useState({
     nombre: '',
     direccion: '',
@@ -40,26 +44,55 @@ function FormularioCrearF() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [ciudadesData, proveedoresData, canalesData] = await Promise.all([
+        setLoading(true);
+        Swal.fire({
+          title: 'Cargando...',
+          text: 'Por favor espere',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        const [farmaciaData, ciudadesData, proveedoresData, canalesData] = await Promise.all([
+          getFarmaciaById(Number(id)),
           getCiudades(),
           getProveedores(),
           getCanalesTransmision()
         ]);
+
         setCiudades(ciudadesData);
         setProveedores(proveedoresData);
         setCanalesTransmision(canalesData);
+
+        setFormData({
+          nombre: farmaciaData.nombre,
+          direccion: farmaciaData.direccion,
+          ciudad: { id: farmaciaData.ciudad?.id || '' },
+          departamento: { id: farmaciaData.departamento?.id || '' },
+          proveedorInternet: { id: farmaciaData.proveedorInternet?.id || '' },
+          pertenece: farmaciaData.pertenece,
+          coordenadas: farmaciaData.coordenadas,
+          canalTransmision: { id: farmaciaData.canalTransmision?.id || '' },
+        });
+
+        setLoading(false);
+        Swal.close();
       } catch (error) {
-        console.error('Error al cargar datos:', error);
+        setLoading(false);
+        console.error('Error al cargar los datos:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Error al cargar los datos necesarios',
+          text: 'No se pudo cargar la información de la farmacia'
         });
       }
     };
 
-    cargarDatos();
-  }, []);
+    if (id) {
+      cargarDatos();
+    }
+  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -91,7 +124,7 @@ function FormularioCrearF() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.nombre || !formData.direccion || !formData.ciudad.id || 
@@ -106,39 +139,45 @@ function FormularioCrearF() {
     }
 
     try {
-      const response = await createFarmacia(formData);
-      console.log("Farmacia Creada:", response);
+      Swal.fire({
+        title: 'Actualizando...',
+        text: 'Por favor espere',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      await updateFarmacia(Number(id), formData);
 
       Swal.fire({
         icon: 'success',
-        title: 'Farmacia Creada',
-        text: 'La farmacia fue creada correctamente.',
+        title: '¡Éxito!',
+        text: 'Farmacia actualizada correctamente'
       });
 
-      setFormData({
-        nombre: '',
-        direccion: '',
-        ciudad: { id: '' },
-        departamento: { id: '' },
-        proveedorInternet: { id: '' },
-        pertenece: '',
-        coordenadas: '',
-        canalTransmision: { id: '' },
-      });
+      navigate('/Farmacias');
     } catch (error) {
-      console.error("Error al crear la farmacia:", error);
+      console.error('Error al actualizar:', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo crear la farmacia. Por favor, inténtalo nuevamente.',
+        text: 'No se pudo actualizar la farmacia'
       });
     }
   };
 
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
   return (
     <div className="card-body">
-      <h5 className="card-title">Nueva Farmacia</h5>
+      <h5 className="card-title">Editar Farmacia</h5>
       <hr />
+      <h3>ID Farmacia: {id}</h3>
+      <br />
+
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
           <label htmlFor="nombre" className="form-label">Nombre*</label>
@@ -148,6 +187,7 @@ function FormularioCrearF() {
             id="nombre"
             value={formData.nombre}
             onChange={handleChange}
+            required
           />
         </div>
         <div className="col-md-6">
@@ -158,6 +198,7 @@ function FormularioCrearF() {
             id="coordenadas"
             value={formData.coordenadas}
             onChange={handleChange}
+            required
           />
         </div>
         <div className="col-md-12">
@@ -168,6 +209,7 @@ function FormularioCrearF() {
             id="direccion"
             value={formData.direccion}
             onChange={handleChange}
+            required
           />
         </div>
         <div className="col-md-6">
@@ -177,6 +219,7 @@ function FormularioCrearF() {
             className="form-select"
             value={formData.ciudad.id}
             onChange={handleChange}
+            required
           >
             <option value="">Seleccione una ciudad</option>
             {ciudades.map(ciudad => (
@@ -186,6 +229,18 @@ function FormularioCrearF() {
             ))}
           </select>
         </div>
+        <div className="col-md-6">
+          <label htmlFor="departamento" className="form-label">Departamento</label>
+          <input
+            type="text"
+            className="form-control"
+            id="departamento"
+            value={formData.ciudad.id ? 
+              ciudades.find(c => c.id.toString() === formData.ciudad.id)?.departamento.nombre || '' 
+              : ''}
+            disabled
+          />
+        </div>
         <div className="col-6">
           <label htmlFor="proveedorInternet" className="form-label">Proveedor*</label>
           <select
@@ -193,6 +248,7 @@ function FormularioCrearF() {
             className="form-select"
             value={formData.proveedorInternet.id}
             onChange={handleChange}
+            required
           >
             <option value="">Seleccione un proveedor</option>
             {proveedores.map(proveedor => (
@@ -209,6 +265,7 @@ function FormularioCrearF() {
             className="form-select"
             value={formData.canalTransmision.id}
             onChange={handleChange}
+            required
           >
             <option value="">Seleccione un canal</option>
             {canalesTransmision.map(canal => (
@@ -225,6 +282,7 @@ function FormularioCrearF() {
             className="form-select"
             value={formData.pertenece}
             onChange={handleChange}
+            required
           >
             <option value="">Seleccione una opción</option>
             <option value="PHARMASER">PHARMASER</option>
@@ -234,23 +292,14 @@ function FormularioCrearF() {
 
         <div className="text-center">
           <button type="submit" className="btn btn-secondary me-4">
-            <i className="bi bi-floppy m-1" />GUARDAR
+            <i className="bi bi-box-arrow-up m-1" />ACTUALIZAR
           </button>
           <button
-            type="reset"
+            type="button"
             className="btn btn-outline-secondary"
-            onClick={() => setFormData({
-              nombre: '',
-              direccion: '',
-              ciudad: { id: '' },
-              departamento: { id: '' },
-              proveedorInternet: { id: '' },
-              pertenece: '',
-              coordenadas: '',
-              canalTransmision: { id: '' },
-            })}
+            onClick={() => navigate('/Farmacias')}
           >
-            <i className="bi bi-trash-fill m-1" />LIMPIAR
+            <i className="bi bi-arrow-left m-1" />CANCELAR
           </button>
         </div>
       </form>
@@ -258,4 +307,4 @@ function FormularioCrearF() {
   );
 }
 
-export default FormularioCrearF;
+export default FormularioEditarF;

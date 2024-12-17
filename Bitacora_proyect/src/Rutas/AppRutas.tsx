@@ -9,21 +9,63 @@ import { CrearFarmacia } from "../Paginas/CrearFarmacia"
 import { EditarFarmacia } from "../Paginas/EditarFarmacias"
 import { CrearReporte } from "../Paginas/CrearReportes"
 import { EditarReporte } from "../Paginas/EditarReporte"
+import ProtectedRoute from "../Rutas/ProtectedRoute"
 
 export const AppRutas = () => {
     return(
         <Routes>
-            <Route path = '/login' element={<Login/>}/>
-            <Route path = '/Reportes' element={<Reportes/>}/>
-            <Route path="/Farmacias" element={<Farmacias/>}/>
-            <Route path="/Proveedores" element={<Proveedores/>}/>
-            <Route path="/CrearProveedor" element={<CrearProveedor/>}/>
-            <Route path="/EditarProveedor/:id" element={<EditarProveedor/>}/>
-            <Route path="/CrearFarmacia" element={<CrearFarmacia/>}/>
-            <Route path="/EditarFarmacia/:id" element={<EditarFarmacia/>}/>
-            <Route path="/CrearReporte" element={<CrearReporte/>}/>
-            <Route path="/EditarReporte/:id" element={<EditarReporte/>}/>
-            <Route path="/*" element ={ <Navigate to="/login" /> } />
+            <Route path="/login" element={<Login/>}/>
+            
+            {/* Rutas accesibles para técnicos y admins */}
+            <Route path="/reportes" element={
+                <ProtectedRoute allowedRoles={[1, 2]}>
+                    <Reportes/>
+                </ProtectedRoute>
+            }/>
+            <Route path="/crearReporte" element={
+                <ProtectedRoute allowedRoles={[1, 2]}>
+                    <CrearReporte/>
+                </ProtectedRoute>
+            }/>
+            <Route path="/editarReporte/:id" element={
+                <ProtectedRoute allowedRoles={[1, 2]}>
+                    <EditarReporte/>
+                </ProtectedRoute>
+            }/>
+            
+            {/* Rutas solo para admin */}
+            <Route path="/farmacias" element={
+                <ProtectedRoute allowedRoles={[1]}>
+                    <Farmacias/>
+                </ProtectedRoute>
+            }/>
+            <Route path="/proveedores" element={
+                <ProtectedRoute allowedRoles={[1]}>
+                    <Proveedores/>
+                </ProtectedRoute>
+            }/>
+            <Route path="/crearProveedor" element={
+                <ProtectedRoute allowedRoles={[1]}>
+                    <CrearProveedor/>
+                </ProtectedRoute>
+            }/>
+            <Route path="/editarProveedor/:id" element={
+                <ProtectedRoute allowedRoles={[1]}>
+                    <EditarProveedor/>
+                </ProtectedRoute>
+            }/>
+            <Route path="/crearFarmacia" element={
+                <ProtectedRoute allowedRoles={[1]}>
+                    <CrearFarmacia/>
+                </ProtectedRoute>
+            }/>
+            <Route path="/editarFarmacia/:id" element={
+                <ProtectedRoute allowedRoles={[1]}>
+                    <EditarFarmacia/>
+                </ProtectedRoute>
+            }/>
+            
+            <Route path="/*" element={<Navigate to="/login" />} />
         </Routes>
     )
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProveedorInternetById, updateProveedorInternet } from '../servicios/ProveedoresService';
+import { getProveedorInternetById, updateProveedorInternet } from '../../servicios/ProveedoresService';
 import Swal from 'sweetalert2';
 
 const EditarProveedor: React.FC = () => {

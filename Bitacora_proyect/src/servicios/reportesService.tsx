@@ -12,19 +12,22 @@ export const getReporte = async () => {
   }
 };
 
-export const getReporteById = async (id: number) => {
-  try {
-    const response = await axios.get(`${API_URL}/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching reporte by id:', error);
-    throw error;
-  }
-};
-
 export const createReporte = async (data: any) => {
   try {
-    const response = await axios.post(API_URL, data);
+  
+    const reporteFormateado = {
+      fecha: data.fecha ? new Date(data.fecha) : null,
+      farmacia: data.farmacia,
+      fecha_hora_inicio: data.fecha_hora_inicio ? new Date(data.fecha_hora_inicio) : null,
+      fecha_hora_fin: null,
+      duracion_incidente: data.duracion_incidente || null,
+      estado: data.estado || 'ABIERTO',
+      motivo: data.motivo,
+      observacion: data.observacion || '',
+      isDeleted: false
+    };
+
+    const response = await axios.post(API_URL, reporteFormateado);
     return response.data;
   } catch (error) {
     console.error('Error creating reporte:', error);
@@ -52,17 +55,12 @@ export const deleteReporte = async (id: number) => {
   }
 };
 
-export const getReportesById = async (id: number) => {
-  const response = await axios.get(`http://localhost:8080/api/reporte/${id}`);
-  return response.data;
-};
-
-export const updateReportes = async (id: number, reportesData: any) => {
+export const getReporteById = async (id: number) => {
   try {
-    const response = await axios.put(`http://localhost:8080/api/reporte${id}`, reportesData);
+    const response = await axios.get(`${API_URL}/${id}`);
     return response.data;
   } catch (error) {
-    console.error('Error updating reporte:', error);
-    throw error; 
+    console.error('Error fetching reporte by id:', error);
+    throw error;
   }
-}
+};

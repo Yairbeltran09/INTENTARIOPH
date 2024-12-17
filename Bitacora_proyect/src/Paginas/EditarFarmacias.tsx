@@ -1,7 +1,7 @@
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
-import Footer from '../components/Footer';
-import FormularioEditarF from '../components/FormularioEditarF';
+import Header from '../components/Header/Header';
+import Sidebar from '../components/Sidebar/Sidebar';
+import Footer from '../components/footer/Footer';
+import FormularioEditarF from '../components/FormulariosEditar.tsx/FormularioEditarF';
 
 
 
