@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Badge, FormControl, Card } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { getProveedor_internet, deleteProveedor } from '../../servicios/ProveedoresService';
-import { TitlePage } from './TitlePage';
 import { Link } from 'react-router-dom';
 
 const ProveedorTable: React.FC = () => {
@@ -102,7 +101,6 @@ const ProveedorTable: React.FC = () => {
 
   return (
     <>
-      <TitlePage name="Proveedores" />
       <div className="col-lg-12">
         <Card className="stretch stretch-full">
           <Card.Body className="p-0">

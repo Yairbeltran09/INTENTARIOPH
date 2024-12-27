@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../servicios/authServices';
-import logoph from "../../assets/g3-gris.png";
-import sistemas from "../../assets/SISTEMA DE GESTION TIC.webp";
+import logoph from "../../assets/inner.png";
+import sistemas from "../../assets/SISTEMA_DE_GESTION_TIC_enhanced.webp";
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -85,7 +85,7 @@ const Login = () => {
                         required
                       />
                     </div>
-                    <button type="submit" className="btn btn-secondary btn-lg w-100">
+                    <button type="submit" className="btn  btn-lg w-100" style={{ backgroundColor: '#f6952c', color: '#fff' }}>
                       Iniciar Sesión
                     </button>
                   </form>
@@ -101,7 +101,7 @@ const Login = () => {
                     Copyright © 2024 Todos los derechos reservados
                   </p>
                 </div>
-                <div className="col-lg-6 bg-primary">
+                <div className="col-lg-6 bg-light">
                   <div className="h-100 d-flex align-items-center justify-content-center">
                     <img src={sistemas} className="img-fluid" alt="Sistema" />
                   </div>
