@@ -25,11 +25,11 @@ const HeaderRight = () => {
             </button>
 
 
-            <div className="dropdown me-3">
+            <div className="dropdown me-1">
                 <button className="btn btn-link text-secondary p-2" data-bs-toggle="dropdown">
-                    <Clock size={20} />
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-                        2
+                    <Clock size={25} />
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill" style={{ backgroundColor: '#f6952c', fontSize: '0.7em' }}>
+                        10
                     </span>
                 </button>
             </div>

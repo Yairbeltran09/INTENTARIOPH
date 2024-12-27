@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser, logout } from '../../servicios/authServices';
 import { AlertTriangle, Home, Users } from 'react-feather';
-import SidebarHeader from './SidebarHeader';
+
 import SidebarMenuItem from './SidebarMenuItem';
 import SidebarUserProfile from './SidebarUserProfile';
 
@@ -27,8 +27,6 @@ const Sidebar: React.FC = () => {
   return (
     <nav className="bg-white h-100 border-end position-fixed" style={{ width: "280px" }}>
       <div className="d-flex flex-column h-100">
-        <SidebarHeader />
-
         <div className="flex-grow-1 overflow-auto py-2">
           <ul className="nav flex-column">
             <li className="nav-item px-3 py-2">
