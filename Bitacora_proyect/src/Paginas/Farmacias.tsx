@@ -1,9 +1,11 @@
-import FarmaciaTabla from '../components/Tablas/TablaFarmcia';
+
+import { Layout } from "../components/Layout/Layout";
+import FarmaciasTable from "../components/Tablas/TablaFarmcia";
 
 export const Farmacias = () => {
   return (
-
-      <FarmaciaTabla />
-
-  )
-}
+    <Layout>
+      <FarmaciasTable />
+    </Layout>
+  );
+};

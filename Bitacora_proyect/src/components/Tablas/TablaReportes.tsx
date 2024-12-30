@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Badge, FormControl, Card } from 'react-bootstrap';
 import Swal from 'sweetalert2';
-import { TitlePage } from './TitlePage';
 import { getReporte, deleteReporte } from '../../servicios/reportesService';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
@@ -77,7 +76,7 @@ const ReporteTable: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 11;
+  const itemsPerPage = 10;
 
   // Filtros
   const [filterFecha, setFilterFecha] = useState<string | null>(null);
@@ -188,7 +187,7 @@ const ReporteTable: React.FC = () => {
 
   return (
     <>
-      <TitlePage name="Reportes" />
+      
       <div className="col-lg-12">
         <Card className="stretch stretch-full">
           <Card.Body className="p-0">

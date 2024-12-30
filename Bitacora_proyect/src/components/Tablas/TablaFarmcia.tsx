@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Badge, FormControl, Card } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { getFarmacias, deleteFarmacia } from '../../servicios/farmaciaService';
-import { TitlePage } from './TitlePage';
+
 import { Link } from 'react-router-dom';
 
 const FarmaciaTabla: React.FC = () => {
@@ -10,7 +10,7 @@ const FarmaciaTabla: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const [filterNombre, setFilterNombre] = useState('');
   const [filterDireccion, setFilterDireccion] = useState('');
@@ -104,7 +104,7 @@ const FarmaciaTabla: React.FC = () => {
 
   return (
     <>
-      <TitlePage name="Farmacias" />
+
       <div className="col-lg-12">
         <Card className="stretch stretch-full">
           <Card.Body className="p-0">

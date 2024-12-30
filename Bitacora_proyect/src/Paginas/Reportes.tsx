@@ -1,9 +1,11 @@
-import ReporteTable from '../components/Tablas/TablaReportes';
+
+import { Layout } from "../components/Layout/Layout";
+import ReportesTable from "../components/Tablas/TablaReportes";
 
 export const Reportes = () => {
   return (
-
-      <ReporteTable />
-
+    <Layout>
+      <ReportesTable />
+    </Layout>
   );
 };

@@ -4,7 +4,7 @@ import ProveedorTable from "../components/Tablas/TablaProveedor";
 
 export const Proveedores = () => {
   return (
-    <Layout title="Proveedores">
+    <Layout>
       <ProveedorTable />
     </Layout>
   );

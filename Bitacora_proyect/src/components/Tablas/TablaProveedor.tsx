@@ -10,7 +10,7 @@ const ProveedorTable: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const [filterNombre, setFilterNombre] = useState('');
   const [filterCorreo, setFilterCorreo] = useState('');
@@ -181,8 +181,7 @@ const ProveedorTable: React.FC = () => {
                       </td>
                       <td>{proveedor.correo}</td>
                       <td>
-                        <div className="fw-bold">{proveedor.nombre_contacto}</div>
-                        <small className="text-muted">Tel: {proveedor.numero_contacto}</small>
+                        <div >{proveedor.nombre_contacto}</div>
                       </td>
                       <td>{proveedor.numero_contacto}</td>
                       <td>

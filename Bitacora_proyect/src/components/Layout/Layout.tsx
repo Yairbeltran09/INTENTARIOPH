@@ -6,7 +6,6 @@ import HeaderRight from "../Header/HeaderRight";
 
 interface LayoutProps {
     children: React.ReactNode;
-    title: string;
 }
 
 export const Layout = (props: LayoutProps) => {
@@ -28,7 +27,6 @@ export const Layout = (props: LayoutProps) => {
 
                     <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                         <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 className="h2">{props.title}</h1>
                         </div>
                         {props.children}
                     </main>
