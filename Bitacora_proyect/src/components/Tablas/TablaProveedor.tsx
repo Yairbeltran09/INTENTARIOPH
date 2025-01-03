@@ -174,7 +174,7 @@ const ProveedorTable: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <div>
-                            <div className="fw-bold">{proveedor.nombre}</div>
+                            <div >{proveedor.nombre}</div>
                             <small className="text-muted">ID: {proveedor.id}</small>
                           </div>
                         </div>

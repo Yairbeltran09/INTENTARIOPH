@@ -120,7 +120,7 @@ const FarmaciaTabla: React.FC = () => {
                         value={filterNombre}
                         onChange={(e) => setFilterNombre(e.target.value)}
                       />
-                      Nombre
+                      NOMBRE
                     </th>
                     <th>
                       <FormControl
@@ -130,7 +130,7 @@ const FarmaciaTabla: React.FC = () => {
                         value={filterDireccion}
                         onChange={(e) => setFilterDireccion(e.target.value)}
                       />
-                      Dirección
+                      DIRECCIÓN
                     </th>
                     <th>
                       <FormControl
@@ -140,7 +140,7 @@ const FarmaciaTabla: React.FC = () => {
                         value={filterCiudad}
                         onChange={(e) => setFilterCiudad(e.target.value)}
                       />
-                      Ciudad
+                      CIUDAD
                     </th>
                     <th>
                       <FormControl
@@ -150,7 +150,7 @@ const FarmaciaTabla: React.FC = () => {
                         value={filterDepartamento}
                         onChange={(e) => setFilterDepartamento(e.target.value)}
                       />
-                      Departamento
+                      DEPARTAMENTO
                     </th>
                     <th>
                       <FormControl
@@ -160,7 +160,7 @@ const FarmaciaTabla: React.FC = () => {
                         value={filterProveedor}
                         onChange={(e) => setFilterProveedor(e.target.value)}
                       />
-                      Proveedor
+                      PROVEEDOR
                     </th>
                     <th>
                       <FormControl
@@ -170,14 +170,14 @@ const FarmaciaTabla: React.FC = () => {
                         value={filterPertenece}
                         onChange={(e) => setFilterPertenece(e.target.value)}
                       />
-                      Pertenece
+                      PERTENECE
                     </th>
                     <th className="text-center">
-                      <button onClick={clearFilters} type="button" className="btn btn-light btn-sm">
+                      <button onClick={clearFilters} type="button" className="btn btn-sm">
                         <i className='bi bi-brush' />
                       </button>
                       <span style={{ display: 'block', marginTop: '4px' }}>
-                        Acciones
+                        ACCIONES
                       </span>
                     </th>
                   </tr>
@@ -188,19 +188,18 @@ const FarmaciaTabla: React.FC = () => {
                       <td>
                         <div className="d-flex align-items-center">
                           <div>
-                            <div className="fw-bold">{farmacia?.nombre || '-'}</div>
+                            <div>{farmacia?.nombre || '-'}</div>
                             <small className="text-muted">ID: {farmacia.id}</small>
                           </div>
                         </div>
                       </td>
                       <td>{farmacia?.direccion || '-'}</td>
                       <td>
-                        <div className="fw-bold">{farmacia?.ciudad?.nombre_ciudad || '-'}</div>
-                        <small className="text-muted">{farmacia?.ciudad?.departamento?.name_departamento || '-'}</small>
+                        <div>{farmacia?.ciudad?.nombre_ciudad || '-'}</div>
                       </td>
                       <td>{farmacia?.ciudad?.departamento?.name_departamento || '-'}</td>
                       <td>
-                        <div className="fw-bold">{farmacia?.proveedor?.nombre || '-'}</div>
+                        <div>{farmacia?.proveedor?.nombre || '-'}</div>
                         <small className="text-muted">NIT: {farmacia?.proveedor?.nit || '-'}</small>
                       </td>
                       <td>
@@ -209,12 +208,14 @@ const FarmaciaTabla: React.FC = () => {
                         </Badge>
                       </td>
                       <td>
-                        <div className="d-flex gap-2 justify-content-end">
-                          <Link to={`/EditarFarmacia/${farmacia.id}`} className="btn btn-light btn-sm">
+                        <div className="d-flex justify-content-end btn-group" role="group">
+
+                          <Link to={`/EditarFarmacia/${farmacia.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(1)}>
                             <i className="bi bi-pencil"></i>
                           </Link>
                           <button
-                            className="btn btn-light btn-sm"
+                            className="btn btn-sm"
+                            style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }}
                             onClick={() => handleDelete(farmacia.id)}
                           >
                             <i className="bi bi-trash"></i>
@@ -227,28 +228,28 @@ const FarmaciaTabla: React.FC = () => {
               </Table>
             </div>
           </Card.Body>
-          <Card.Footer>
-            <ul className="pagination pagination-sm mb-0">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(1)}>
+          <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <ul className="pagination pagination-sm" >
+              <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(1)}>
                   <i className="bi bi-chevron-double-left"></i>
                 </button>
               </li>
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(currentPage - 1)}>
+              <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(currentPage - 1)}>
                   <i className="bi bi-chevron-left"></i>
                 </button>
               </li>
-              <li className="page-item active">
-                <span className="page-link text-dark bg-light border-secondary">{currentPage}</span>
+              <li className=" m-1 page-item active">
+                <span className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }}>{currentPage}</span>
               </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(currentPage + 1)}>
+              <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <button className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(currentPage + 1)}>
                   <i className="bi bi-chevron-right"></i>
                 </button>
               </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(totalPages)}>
+              <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <button className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(totalPages)}>
                   <i className="bi bi-chevron-double-right"></i>
                 </button>
               </li>
