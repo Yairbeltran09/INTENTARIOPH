@@ -31,5 +31,3 @@ public class ReporteService {
         reporteRepo.deleteById(id);
     }
 }
-
-

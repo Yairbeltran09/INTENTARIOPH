@@ -76,7 +76,7 @@ const ReporteTable: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 7;
 
   // Filtros
   const [filterFecha, setFilterFecha] = useState<string | null>(null);
@@ -187,7 +187,7 @@ const ReporteTable: React.FC = () => {
 
   return (
     <>
-      
+
       <div className="col-lg-12">
         <Card className="stretch stretch-full">
           <Card.Body className="p-0">

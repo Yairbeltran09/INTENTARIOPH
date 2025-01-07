@@ -10,7 +10,7 @@ const ProveedorTable: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 7;
 
   const [filterNombre, setFilterNombre] = useState('');
   const [filterCorreo, setFilterCorreo] = useState('');

@@ -10,7 +10,7 @@ const FarmaciaTabla: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 2;
 
   const [filterNombre, setFilterNombre] = useState('');
   const [filterDireccion, setFilterDireccion] = useState('');
@@ -104,7 +104,6 @@ const FarmaciaTabla: React.FC = () => {
 
   return (
     <>
-
       <div className="col-lg-12">
         <Card className="stretch stretch-full">
           <Card.Body className="p-0">
@@ -210,12 +209,12 @@ const FarmaciaTabla: React.FC = () => {
                       <td>
                         <div className="d-flex justify-content-end btn-group" role="group">
 
-                          <Link to={`/EditarFarmacia/${farmacia.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(1)}>
+                          <Link to={`/EditarFarmacia/${farmacia.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
                             <i className="bi bi-pencil"></i>
                           </Link>
                           <button
                             className="btn btn-sm"
-                            style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }}
+                            style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
                             onClick={() => handleDelete(farmacia.id)}
                           >
                             <i className="bi bi-trash"></i>
@@ -231,25 +230,25 @@ const FarmaciaTabla: React.FC = () => {
           <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <ul className="pagination pagination-sm" >
               <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(1)}>
+                <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
                   <i className="bi bi-chevron-double-left"></i>
                 </button>
               </li>
               <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(currentPage - 1)}>
+                <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage - 1)}>
                   <i className="bi bi-chevron-left"></i>
                 </button>
               </li>
               <li className=" m-1 page-item active">
-                <span className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }}>{currentPage}</span>
+                <span className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}>{currentPage}</span>
               </li>
               <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(currentPage + 1)}>
+                <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage + 1)}>
                   <i className="bi bi-chevron-right"></i>
                 </button>
               </li>
               <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" style={{ backgroundColor: '#f6952c', color: '#fff', borderColor: '#f6952c' }} onClick={() => handlePageChange(totalPages)}>
+                <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(totalPages)}>
                   <i className="bi bi-chevron-double-right"></i>
                 </button>
               </li>
@@ -258,6 +257,7 @@ const FarmaciaTabla: React.FC = () => {
         </Card>
       </div>
     </>
+
   );
 };
 
