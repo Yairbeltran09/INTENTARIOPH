@@ -110,8 +110,8 @@ const Sidebar: React.FC = () => {
                         stroke="currentColor"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        width="18"
-                        height="18"
+                        width="15"
+                        height="15"
                         strokeWidth="2"
                       >
                         <path d={item.icon}></path>
@@ -125,7 +125,7 @@ const Sidebar: React.FC = () => {
           ))}
         </div>
       </div>
-      <div style={{ backgroundColor: "#ffffff" }}>
+      <div className="sticky-end" style={{ backgroundColor: "#ffffff" }}>
         <div className="p-3">
           <div className="card bg-mb-0" style={{ backgroundColor: "rgba(246, 149, 44, 0.1)", border: "none" }}>
             <div className="card-body d-flex justify-content-between align-items-center">
