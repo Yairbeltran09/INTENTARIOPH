@@ -1,18 +1,17 @@
 
 import { Button } from "react-bootstrap";
 import { Layout } from "../components/Layout/Layout";
-import FarmaciasTable from "../components/Tablas/TablaFarmcia";
-
+import FarmaciaTabla from "../components/Tablas/TablaFarmcia";
 
 export const Farmacias = () => {
   return (
     <Layout>
-      <div className="d-flex align-items-center" style={{ color: 'black', backgroundColor: 'white' }}>
+      <div className="d-flex align-items-center" style={{ color: 'black' }}>
         <div className="pagetitle">
           <h1>Farmacias</h1>
           <nav>
             <ol className="breadcrumb">
-              <li className="breadcrumb-item ">Inicio</li>
+              <li className="breadcrumb-item">Inicio</li>
               <li className="breadcrumb-item active">Proveedores</li>
             </ol>
           </nav>
@@ -23,7 +22,11 @@ export const Farmacias = () => {
           </Button>
         </div>
       </div>
-      <FarmaciasTable />
+      <div>
+        <FarmaciaTabla />
+      </div>
     </Layout>
   );
 };
+
+export default Farmacias;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Badge, FormControl, Card } from 'react-bootstrap';
+import { Badge, FormControl, Card } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { getReporte, deleteReporte } from '../../servicios/reportesService';
 import { format } from 'date-fns';
@@ -76,7 +76,7 @@ const ReporteTable: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 10;
 
   // Filtros
   const [filterFecha, setFilterFecha] = useState<string | null>(null);
@@ -187,187 +187,184 @@ const ReporteTable: React.FC = () => {
 
   return (
     <>
+      <div className='p-2' style={{ backgroundColor: '#ffff', borderBlockEndColor: '10px' }}>
+        <div className='table-responsive hv-100' style={{ maxHeight: '50vh' }} >
+          <table className='table table-hover text-nowrap'>
+            <thead>
+              <tr>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar fecha"
+                    value={filterFecha ?? ''}
+                    onChange={(e) => setFilterFecha(e.target.value)}
+                    className="form-control-sm"
+                  />
+                  Fecha
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar farmacia"
+                    value={filterFarmacia ?? ''}
+                    onChange={(e) => setFilterFarmacia(e.target.value)}
+                  />
+                  Farmacia
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar inicio"
+                    value={filterFechaHoraInicio ?? ''}
+                    onChange={(e) => setFilterFechaHoraInicio(e.target.value)}
+                  />
+                  Fecha/Hora Inicio
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar fin"
+                    value={filterFechaHoraFin ?? ''}
+                    onChange={(e) => setFilterFechaHoraFin(e.target.value)}
+                  />
+                  Fecha/Hora Fin
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar duración"
+                    value={filterDuracionIncidente ?? ''}
+                    onChange={(e) => setFilterDuracionIncidente(e.target.value)}
+                  />
+                  Duración
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar proveedor"
+                    value={filterProveedor ?? ''}
+                    onChange={(e) => setFilterProveedor(e.target.value)}
+                  />
+                  Proveedor
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar motivo"
+                    value={filterMotivo ?? ''}
+                    onChange={(e) => setFilterMotivo(e.target.value)}
+                  />
+                  Motivo
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar estado"
+                    value={filterEstado ?? ''}
+                    onChange={(e) => setFilterEstado(e.target.value)}
+                  />
+                  Estado
+                </th>
+                <th className="text-center">
+                  <button style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={clearFilters} type="button" className="btn btn-light btn-sm">
+                    <i className='bi bi-brush' />
+                  </button>
+                  <span style={{ display: 'block', marginTop: '4px' }}>
+                    Acciones
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentReportes.map((reporte) => (
+                <tr key={reporte.id}>
+                  <td>
+                    <div className="d-flex align-items-center">
+                      <div>
+                        <div>{reporte.fecha}</div>
+                        <small className="text-muted">ID: {reporte.id}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div>{reporte.farmacia.nombre}</div>
+                  </td>
+                  <td>
+                    <div>{format(new Date(reporte.fecha_hora_inicio), 'yyyy-MM-dd')}</div>
+                    <small className="text-muted">{format(new Date(reporte.fecha_hora_inicio), 'HH:mm:ss')}</small>
+                  </td>
+                  <td>
+                    <div>{format(new Date(reporte.fecha_hora_fin), 'yyyy-MM-dd')}</div>
+                    <small className="text-muted">{format(new Date(reporte.fecha_hora_fin), 'HH:mm:ss')}</small>
+                  </td>
+                  <td>{reporte.duracion_incidente}</td>
+                  <td>
+                    <div>{reporte.farmacia.proveedor.nombre}</div>
+                    <small className="text-muted">NIT: {reporte.farmacia.proveedor.nit}</small>
+                  </td>
+                  <td>{reporte.motivo?.motivo || "Sin motivo"}</td>
+                  <td>
+                    <Badge bg={reporte.estado === 'ABIERTO' ? 'success' : 'danger'} className="rounded-pill">
+                      {reporte.estado}
+                    </Badge>
+                  </td>
+                  <td>
+                    <div className="d-flex justify-content-end btn-group" role="group">
 
-      <div className="col-lg-12">
-        <Card className="stretch stretch-full">
-          <Card.Body className="p-0">
-            <div className="table-responsive">
-              <Table hover className="mb-0">
-                <thead>
-                  <tr>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar fecha"
-                        value={filterFecha ?? ''}
-                        onChange={(e) => setFilterFecha(e.target.value)}
-                        className="form-control-sm"
-                      />
-                      Fecha
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar farmacia"
-                        value={filterFarmacia ?? ''}
-                        onChange={(e) => setFilterFarmacia(e.target.value)}
-                      />
-                      Farmacia
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar inicio"
-                        value={filterFechaHoraInicio ?? ''}
-                        onChange={(e) => setFilterFechaHoraInicio(e.target.value)}
-                      />
-                      Fecha/Hora Inicio
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar fin"
-                        value={filterFechaHoraFin ?? ''}
-                        onChange={(e) => setFilterFechaHoraFin(e.target.value)}
-                      />
-                      Fecha/Hora Fin
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar duración"
-                        value={filterDuracionIncidente ?? ''}
-                        onChange={(e) => setFilterDuracionIncidente(e.target.value)}
-                      />
-                      Duración
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar proveedor"
-                        value={filterProveedor ?? ''}
-                        onChange={(e) => setFilterProveedor(e.target.value)}
-                      />
-                      Proveedor
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar motivo"
-                        value={filterMotivo ?? ''}
-                        onChange={(e) => setFilterMotivo(e.target.value)}
-                      />
-                      Motivo
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar estado"
-                        value={filterEstado ?? ''}
-                        onChange={(e) => setFilterEstado(e.target.value)}
-                      />
-                      Estado
-                    </th>
-                    <th className="text-center">
-                      <button onClick={clearFilters} type="button" className="btn btn-light btn-sm">
-                        <i className='bi bi-brush' />
+                      <Link to={`/EditarReporte/${reporte.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
+                        <i className="bi bi-pencil"></i>
+                      </Link>
+                      <button
+                        className="btn btn-sm"
+                        style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                        onClick={() => handleDelete(reporte.id)}
+                      >
+                        <i className="bi bi-trash"></i>
                       </button>
-                      <span style={{ display: 'block', marginTop: '4px' }}>
-                        Acciones
-                      </span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentReportes.map((reporte) => (
-                    <tr key={reporte.id}>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <div>
-                            <div>{reporte.fecha}</div>
-                            <small className="text-muted">ID: {reporte.id}</small>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div>{reporte.farmacia.nombre}</div>
-                      </td>
-                      <td>
-                        <div>{format(new Date(reporte.fecha_hora_inicio), 'yyyy-MM-dd')}</div>
-                        <small className="text-muted">{format(new Date(reporte.fecha_hora_inicio), 'HH:mm:ss')}</small>
-                      </td>
-                      <td>
-                        <div>{format(new Date(reporte.fecha_hora_fin), 'yyyy-MM-dd')}</div>
-                        <small className="text-muted">{format(new Date(reporte.fecha_hora_fin), 'HH:mm:ss')}</small>
-                      </td>
-                      <td>{reporte.duracion_incidente}</td>
-                      <td>
-                        <div>{reporte.farmacia.proveedor.nombre}</div>
-                        <small className="text-muted">NIT: {reporte.farmacia.proveedor.nit}</small>
-                      </td>
-                      <td>{reporte.motivo?.motivo || "Sin motivo"}</td>
-                      <td>
-                        <Badge bg={reporte.estado === 'ABIERTO' ? 'success' : 'danger'} className="rounded-pill">
-                          {reporte.estado}
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="d-flex gap-2 justify-content-end">
-                          <Link to={`/EditarReporte/${reporte.id}`} className="btn btn-light btn-sm">
-                            <i className="bi bi-pencil"></i>
-                          </Link>
-                          <button
-                            className="btn btn-light btn-sm"
-                            onClick={() => handleDelete(reporte.id)}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </Card.Body>
-          <Card.Footer>
-            <ul className="pagination pagination-sm mb-0">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(1)}>
-                  <i className="bi bi-chevron-double-left"></i>
-                </button>
-              </li>
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(currentPage - 1)}>
-                  <i className="bi bi-chevron-left"></i>
-                </button>
-              </li>
-              <li className="page-item active">
-                <span className="page-link text-dark bg-light border-secondary">{currentPage}</span>
-              </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(currentPage + 1)}>
-                  <i className="bi bi-chevron-right"></i>
-                </button>
-              </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(totalPages)}>
-                  <i className="bi bi-chevron-double-right"></i>
-                </button>
-              </li>
-            </ul>
-          </Card.Footer>
-
-        </Card>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+      <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', backgroundColor: '#ffff', borderBottom: '20px' }}>
+        <ul className="pagination pagination-sm" >
+          <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+            <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
+              <i className="bi bi-chevron-double-left"></i>
+            </button>
+          </li>
+          <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+            <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage - 1)}>
+              <i className="bi bi-chevron-left"></i>
+            </button>
+          </li>
+          <li className=" m-1 page-item active">
+            <span className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}>{currentPage}</span>
+          </li>
+          <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+            <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage + 1)}>
+              <i className="bi bi-chevron-right"></i>
+            </button>
+          </li>
+          <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+            <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(totalPages)}>
+              <i className="bi bi-chevron-double-right"></i>
+            </button>
+          </li>
+        </ul>
+      </Card.Footer>
+
     </>
   );
 };

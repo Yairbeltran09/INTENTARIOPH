@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
-import { logout } from "../../servicios/authServices";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -68,12 +67,8 @@ const Sidebar: React.FC = () => {
     },
   ];
 
-
-
-
-
   return (
-    <div className="sidebar col-lg-2  bg-white border-end d-flex flex-column p-0  vh-100">
+    <div className="sidebar col-lg-2 bg-white border-end d-flex flex-column p-0 vh-100">
       <div className="flex-grow-1 overflow-auto">
         <div className="p-3">
           {sections.map((section, index) => (
@@ -125,18 +120,21 @@ const Sidebar: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className="sticky-end" style={{ backgroundColor: "#ffffff" }}>
+      <div className="sticky-end" style={{ backgroundColor: "#ffffff", position: "sticky", bottom: "0" }}>
         <div className="p-3">
           <div className="card bg-mb-0" style={{ backgroundColor: "rgba(246, 149, 44, 0.1)", border: "none" }}>
             <div className="card-body d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
-                <svg className="me-1" style={{ color: "#f6952c" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="30" height="30" stroke-width="2"> <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path> <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path> </svg>
-                <div className="d-flex row" >
+                <svg className="me-1" style={{ color: "#f6952c" }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" width="30" height="30" strokeWidth="2">
+                  <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+                  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                </svg>
+                <div className="d-flex row">
                   <span className="fw-semibold small">RROJAS</span>
                   <span className="fw-semibold small">ROL</span>
                 </div>
               </div>
-              <Button className="d-flex align-items-center p-1" variant="link" style={{ color: "#f6952c" }} onChange={logout}>
+              <Button className="d-flex align-items-center p-1" variant="link" style={{ color: "#f6952c" }}>
                 <i className="bi bi-box-arrow-right"></i>
               </Button>
             </div>
