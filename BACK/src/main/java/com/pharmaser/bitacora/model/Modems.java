@@ -1,7 +1,6 @@
 package com.pharmaser.bitacora.model;
 
 import jakarta.persistence.*;
-
 import java.security.Timestamp;
 
 @Entity
@@ -15,7 +14,7 @@ public class Modems {
     private String modelo;
     private String estado;
 
-    @ManyToOne // Relación con Farmacias
+    @ManyToOne
     @JoinColumn(name = "ubicacion_modems")
     private Farmacias farmacia;
 

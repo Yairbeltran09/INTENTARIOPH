@@ -26,11 +26,26 @@ const Sidebar: React.FC = () => {
       ],
     },
     {
+      heading: "CONTINGENCIA",
+      items: [
+        {
+          label: "Modems",
+          icon: "M3 13m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z M17 17l0 .01 M13 17l0 .01 M15 13l0 -2 M11.75 8.75a4 4 0 0 1 6.5 0 M8.5 6.5a8 8 0 0 1 13 0",
+          path: "",
+        },
+        {
+          label: "Envio de Modems",
+          icon: "M3 7h3 M3 11h2 M9.02 8.801l-.6 6a2 2 0 0 0 1.99 2.199h7.98a2 2 0 0 0 1.99 -1.801l.6 -6a2 2 0 0 0 -1.99 -2.199h-7.98a2 2 0 0 0 -1.99 1.801z ",
+          path: "",
+        },
+      ],
+    },
+    {
       heading: "INVENTARIO",
       items: [
         {
           label: "Personal",
-          icon: "M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2 M16 3.13a4 4 0 0 1 0 7.75 M21 21v-2a4 4 0 0 0 -3 -3.85",
+          icon: "M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2 M16 3.13a4 4 0 0 1 0 7.75 M21 21v-2a4 4 0 0 0 -3 -3.85 M9.8 7.5l2.982 3.28a3 3 0 0 0 4.238 .202l3.28 -2.982 M9.8 7.5l2.982 3.28a3 3 0 0 0 4.238 .202l3.28 -2.982",
           path: "#",
         },
         {
@@ -68,8 +83,8 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="sidebar col-lg-2 bg-white border-end d-flex flex-column p-0 vh-100">
-      <div className="flex-grow-1 overflow-auto">
+    <div style={{ width: "230px", display: "block" }}>
+      <aside className="overflow-auto" style={{ height: "80vh", width: "230px" }}>
         <div className="p-3">
           {sections.map((section, index) => (
             <div key={index} className="mb-4">
@@ -119,9 +134,8 @@ const Sidebar: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
-      <div className="sticky-end" style={{ backgroundColor: "#ffffff", position: "sticky", bottom: "0" }}>
-        <div className="p-3">
+
+        <div className="p-3 d-block mt-0">
           <div className="card bg-mb-0" style={{ backgroundColor: "rgba(246, 149, 44, 0.1)", border: "none" }}>
             <div className="card-body d-flex justify-content-between align-items-center">
               <div className="d-flex align-items-center">
@@ -140,7 +154,7 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </aside>
     </div>
   );
 };
