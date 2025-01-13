@@ -17,8 +17,7 @@ public class Teclados {
     private String Fecha_compra;
 
 
-    @ManyToMany
-    @JoinColumn(name = "pertenece")
+    @OneToOne(mappedBy = "Teclados")
     private Funcionarios funcionarios;
 
     public long getId() {

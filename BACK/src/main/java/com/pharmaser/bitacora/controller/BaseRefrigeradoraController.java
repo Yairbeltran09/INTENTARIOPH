@@ -53,8 +53,16 @@ public class BaseRefrigeradoraController {
             return ResponseEntity.notFound().build();
         }
 
-        @DeleteMapping("/{id}")
-        public ResponseEntity<Void> deleteBaseRefrigeradora vc
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBaseRefrigeradora(@PathVariable Long id){
+        if (baseRefrigeradoraService.findById(id) != null) {
+            baseRefrigeradoraService.delete(id);
+            return ResponseEntity.noContent().build();
+        }else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

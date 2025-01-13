@@ -18,8 +18,7 @@ public class Diademas {
     private String Descripcion;
 
 
-    @ManyToMany
-    @JoinColumn(name = "pertenece")
+    @OneToOne(mappedBy = "Diademas")
     private Funcionarios funcionarios;
 
     public long getId() {

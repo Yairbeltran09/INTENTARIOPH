@@ -19,8 +19,7 @@ public class HubUsb {
     private String Descripcion;
 
 
-    @ManyToMany
-    @JoinColumn(name = "pertenece")
+    @OneToOne(mappedBy = "Mouses")
     private Funcionarios funcionarios;
 
     public long getId() {

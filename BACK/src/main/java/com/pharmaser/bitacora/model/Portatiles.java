@@ -18,8 +18,7 @@ public class Portatiles {
 
     private String Descripcion;
 
-    @ManyToMany
-    @JoinColumn(name = "pertenece")
+    @OneToOne(mappedBy = "Portatiles")
     private Funcionarios funcionarios;
 
     public long getId() {

@@ -26,4 +26,8 @@ public class BaseRefrigeradoraService {
     public BaseRefrigeradora save(BaseRefrigeradora baseRefrigeradora) {
         return baseRefrigeradoraRepository.save(baseRefrigeradora);
     }
+
+    public void delete(Long id) {
+        baseRefrigeradoraRepository.deleteById(id);
+    }
 }

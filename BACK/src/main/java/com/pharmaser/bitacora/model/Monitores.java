@@ -17,8 +17,7 @@ public class Monitores {
     private String Fecha_compra;
 
 
-    @ManyToMany
-    @JoinColumn(name = "pertenece")
+    @OneToOne(mappedBy = "Monitores")
     private Funcionarios funcionarios;
 
     private String Descripcion;
