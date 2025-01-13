@@ -18,8 +18,7 @@ public class BaseRefrigeradora {
 
     private String Descripcion;
 
-    @ManyToMany
-    @JoinColumn(name = "pertenece")
+    @OneToOne(mappedBy = "BaseRefrigeradora")
     private Funcionarios funcionarios;
 
     public long getId() {
