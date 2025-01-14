@@ -1,6 +1,6 @@
 
 import { Button } from "react-bootstrap";
-import { Layout } from "../components/Layout/Layout";
+import  Layout from "../components/Layout/Layout";
 import ReportesTable from "../components/Tablas/TablaReportes";
 
 export const Reportes = () => {

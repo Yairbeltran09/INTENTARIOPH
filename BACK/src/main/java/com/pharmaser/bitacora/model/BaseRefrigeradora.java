@@ -18,7 +18,7 @@ public class BaseRefrigeradora {
 
     private String Descripcion;
 
-    @OneToOne(mappedBy = "BaseRefrigeradora")
+    @OneToOne(mappedBy = "baseRefrigeradora")
     private Funcionarios funcionarios;
 
     public long getId() {

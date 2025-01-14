@@ -17,7 +17,7 @@ public class Monitores {
     private String Fecha_compra;
 
 
-    @OneToOne(mappedBy = "Monitores")
+    @OneToOne(mappedBy = "monitores")
     private Funcionarios funcionarios;
 
     private String Descripcion;

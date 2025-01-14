@@ -18,7 +18,7 @@ public class Diademas {
     private String Descripcion;
 
 
-    @OneToOne(mappedBy = "Diademas")
+    @OneToOne(mappedBy = "diademas")
     private Funcionarios funcionarios;
 
     public long getId() {

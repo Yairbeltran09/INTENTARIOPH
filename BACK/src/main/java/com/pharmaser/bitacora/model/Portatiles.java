@@ -18,7 +18,7 @@ public class Portatiles {
 
     private String Descripcion;
 
-    @OneToOne(mappedBy = "Portatiles")
+    @OneToOne(mappedBy = "portatiles")
     private Funcionarios funcionarios;
 
     public long getId() {

@@ -1,6 +1,7 @@
 package com.pharmaser.bitacora.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 
 @Entity
@@ -16,10 +17,13 @@ public class Funcionarios {
     private String Correo;
 
 
-    @ManyToMany
-    @JoinColumn(name = "id_Farmcias")
+    @ManyToOne
+    @JoinColumn(name = "Farmcias")
     private Farmacias farmacias;
 
+    @OneToOne
+    @JoinColumn(name = "id_hubusb")
+    private HubUsb hubUsb;
 
     @OneToOne
     @JoinColumn(name = "id_Portatiles")
@@ -86,12 +90,21 @@ public class Funcionarios {
         Correo = correo;
     }
 
+
     public Farmacias getFarmacias() {
         return farmacias;
     }
 
     public void setFarmacias(Farmacias farmacias) {
         this.farmacias = farmacias;
+    }
+
+    public HubUsb getHubUsb() {
+        return hubUsb;
+    }
+
+    public void setHubUsb(HubUsb hubUsb) {
+        this.hubUsb = hubUsb;
     }
 
     public Monitores getMonitores() {

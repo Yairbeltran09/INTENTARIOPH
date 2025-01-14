@@ -17,7 +17,7 @@ public class Teclados {
     private String Fecha_compra;
 
 
-    @OneToOne(mappedBy = "Teclados")
+    @OneToOne(mappedBy = "teclados")
     private Funcionarios funcionarios;
 
     public long getId() {

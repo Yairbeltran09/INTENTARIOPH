@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 public class HubUsb {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -16,11 +15,11 @@ public class HubUsb {
     private String Estado;
     private String Fecha_compra;
 
-    private String Descripcion;
 
-
-    @OneToOne(mappedBy = "Mouses")
+    @OneToOne(mappedBy = "hubUsb")
     private Funcionarios funcionarios;
+
+    private String Descripcion;
 
     public long getId() {
         return id;
@@ -30,28 +29,12 @@ public class HubUsb {
         this.id = id;
     }
 
-    public String getMarca() {
-        return Marca;
+    public String getDescripcion() {
+        return Descripcion;
     }
 
-    public void setMarca(String marca) {
-        Marca = marca;
-    }
-
-    public String getModelo() {
-        return Modelo;
-    }
-
-    public void setModelo(String modelo) {
-        Modelo = modelo;
-    }
-
-    public String getSerial() {
-        return Serial;
-    }
-
-    public void setSerial(String serial) {
-        Serial = serial;
+    public void setDescripcion(String descripcion) {
+        Descripcion = descripcion;
     }
 
     public String getEstado() {
@@ -62,20 +45,36 @@ public class HubUsb {
         Estado = estado;
     }
 
+    public String getSerial() {
+        return Serial;
+    }
+
+    public void setSerial(String serial) {
+        Serial = serial;
+    }
+
+    public String getModelo() {
+        return Modelo;
+    }
+
+    public void setModelo(String modelo) {
+        Modelo = modelo;
+    }
+
+    public String getMarca() {
+        return Marca;
+    }
+
+    public void setMarca(String marca) {
+        Marca = marca;
+    }
+
     public String getFecha_compra() {
         return Fecha_compra;
     }
 
     public void setFecha_compra(String fecha_compra) {
         Fecha_compra = fecha_compra;
-    }
-
-    public String getDescripcion() {
-        return Descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        Descripcion = descripcion;
     }
 
     public Funcionarios getFuncionarios() {

@@ -14,19 +14,19 @@ public class FuncionariosService {
     @Autowired
     private FuncionariosRepository funcionariosRepo;
 
-    private List<Funcionarios> findAll() {
+    public List<Funcionarios> findAll() {
         return funcionariosRepo.findAll();
     }
 
-    private Funcionarios findById(Long id) {
+    public Funcionarios findById(Long id) {
         return funcionariosRepo.findById(id).orElse(null);
     }
 
-    private Funcionarios save(Funcionarios funcionario) {
+    public Funcionarios save(Funcionarios funcionario) {
         return funcionariosRepo.save(funcionario);
     }
 
-    private void delete(Long id) {
+    public void delete(Long id) {
         funcionariosRepo.deleteById(id);
     }
 }

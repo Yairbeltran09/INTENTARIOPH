@@ -19,7 +19,7 @@ public class Mouses {
     private String Descripcion;
 
 
-    @OneToOne(mappedBy = "Mouses")
+    @OneToOne(mappedBy = "mouses")
     private Funcionarios funcionarios;
 
     public long getId() {

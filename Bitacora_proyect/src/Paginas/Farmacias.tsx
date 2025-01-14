@@ -1,11 +1,13 @@
 
 import { Button } from "react-bootstrap";
-import { Layout } from "../components/Layout/Layout";
+import Layout from "../components/Layout/Layout";
 import FarmaciaTabla from "../components/Tablas/TablaFarmcia";
+
 
 export const Farmacias = () => {
   return (
     <Layout>
+      
       <div className="d-flex align-items-center" style={{ color: 'black' }}>
         <div className="pagetitle">
           <h1>Farmacias</h1>

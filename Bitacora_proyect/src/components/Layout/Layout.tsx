@@ -1,23 +1,31 @@
 import React from 'react';
 import Sidebar from "../Sidebar/Sidebar";
-import Header from "../Header/Header";
+import Header from '../Header/Header';
+
+
 
 interface LayoutProps {
     children: React.ReactNode;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
         <>
-            <Header />
-            <div className="d-flex">
-                <Sidebar />
-                <main className='p-3'>
-                    {children}
-                </main>
+            <div className="container-fluid vh-100">
+
+                <div className="row h-100" >
+                    <Sidebar />
+                    <main
+                        className=" ms-sm-auto col-lg-10 p-4 overflow-auto"
+                        style={{ maxHeight: '100vh' }}
+                    >
+                        {children}
+                    </main>
+                </div>
             </div>
+
         </>
     );
-}
+};
 
 export default Layout;

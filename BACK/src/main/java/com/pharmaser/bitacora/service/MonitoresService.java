@@ -6,10 +6,11 @@ import com.pharmaser.bitacora.repository.MonitoresRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 
 @Service
-public class MonitresService {
+public class MonitoresService {
 
     @Autowired
     private MonitoresRepository monitoresRepository;
