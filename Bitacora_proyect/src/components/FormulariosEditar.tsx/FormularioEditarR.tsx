@@ -69,15 +69,22 @@ const initialReporte: IReporte = {
   observacion: ''
 };
 
+
+
 const EditarReporte: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [reporte, setReporte] = useState<IReporte>(initialReporte);
   const [error, setError] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered2, setIsHovered2] = useState(false);
 
   useEffect(() => {
+
     const cargarReporte = async () => {
+
+
       try {
         setLoading(true);
         setError(null);
@@ -178,7 +185,7 @@ const EditarReporte: React.FC = () => {
     <>
       <Card className="shadow-sm">
         <Card.Body>
-          <h5 className="card-title mb-4">Editar Reporte #{id}</h5>
+          <h5 className="card-title mb-4">Reporte #{id}</h5>
           <Form onSubmit={handleSubmit}>
             <Row className="mb-4">
               <Col md={6}>
@@ -245,7 +252,7 @@ const EditarReporte: React.FC = () => {
                 </Form.Group>
               </Col>
             </Row>
-            
+
           </Form>
         </Card.Body>
       </Card>
@@ -293,7 +300,7 @@ const EditarReporte: React.FC = () => {
                 />
               </Form.Group>
             </Col>
-           
+
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Proveedor de Internet</Form.Label>
@@ -315,17 +322,40 @@ const EditarReporte: React.FC = () => {
               </Form.Group>
             </Col>
             <br />
-            <br />  
+            <br />
             <div className="text-center">
-              <Button type="submit" variant="secondary" className="me-2">
+              <Button
+                style={{
+                  backgroundColor: '#f6952c', borderColor: '#f6952c',
+                  cursor: 'pointer',
+                  background: isHovered2 ? '#ffff' : '#f6952c',
+
+                  color: isHovered2 ? '#f6952c' : '#ffff',
+
+                }}
+                onMouseEnter={() => setIsHovered2(true)}
+                onMouseLeave={() => setIsHovered2(false)}
+
+                type="submit"
+                variant="secondary"
+                className="me-2">
                 <i className="bi bi-check-circle me-2"></i>
                 Actualizar
               </Button>
               <Button
+                style={{
+                  backgroundColor: isHovered ? '#f6952c' : '#ffff',
+                  color: isHovered ? '#fff' : '#f6952c',
+                  borderColor: '#f6952c',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
                 type="button"
-                variant="outline-secondary"
                 onClick={() => navigate('/Reportes')}
+
               >
+
                 <i className="bi bi-x-circle me-2"></i>
                 Cancelar
               </Button>

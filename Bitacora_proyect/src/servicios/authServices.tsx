@@ -39,7 +39,7 @@ export const login = async (username: string, password: string): Promise<User> =
     localStorage.setItem('user', JSON.stringify(userInfo));
     return user;
   } catch (error) {
-    //console.error('Error en login:', error);
+    
     throw error;
   }
 };
