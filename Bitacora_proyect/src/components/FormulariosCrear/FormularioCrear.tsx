@@ -86,7 +86,7 @@ function FormularioCrear() {
   };
 
   return (
-    <div className="card-body">
+    <div className="card card-body shadow-sm">
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
           <label htmlFor="nombre" className="form-label">Nombre*</label>

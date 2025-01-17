@@ -1,5 +1,5 @@
 
-import  Layout  from "../components/Layout/Layout";
+import Layout from "../components/Layout/Layout";
 import EditarFarmacias from "../components/FormulariosEditar.tsx/FormularioEditarF";
 
 
@@ -15,7 +15,7 @@ export const EditarFarmacia = () => {
               <li className="breadcrumb-item">Inicio</li>
 
               <li className="breadcrumb-item active">
-                <a className="text-decoration-none" href="/Proveedores">Proveedores</a>
+                <a className="text-decoration-none" href="/Proveedores">Farmacias</a>
               </li>
             </ol>
           </nav>

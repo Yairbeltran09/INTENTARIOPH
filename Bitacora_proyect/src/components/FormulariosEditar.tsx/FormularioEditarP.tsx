@@ -6,7 +6,8 @@ import Swal from 'sweetalert2';
 const EditarProveedor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
+  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered2, setIsHovered2] = useState(false);
   const [loading, setLoading] = useState(true);
   const [proveedor, setProveedor] = useState({
     id: '',
@@ -101,12 +102,8 @@ const EditarProveedor: React.FC = () => {
   }
 
   return (
-    <div className="card-body">
-      <h5 className="card-title">Editar Proveedor</h5>
-      <hr />
-      <h3>ID Proveedor: {id}</h3>
-      <br />
-
+    <div className="card card-body shadow-sm">
+      <h5>ID: {id}</h5>
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
           <label htmlFor="nombre" className="form-label">Nombre*</label>
@@ -208,13 +205,32 @@ const EditarProveedor: React.FC = () => {
           />
         </div>
         <div className="text-center">
-          <button type="submit" className="btn btn-secondary m-2"
-          onClick={() => navigate('/proveedores')}
+          <button
+            style={{
+              backgroundColor: '#f6952c', borderColor: '#f6952c',
+              cursor: 'pointer',
+              background: isHovered2 ? '#ffff' : '#f6952c',
+
+              color: isHovered2 ? '#f6952c' : '#ffff',
+
+            }}
+            onMouseEnter={() => setIsHovered2(true)}
+            onMouseLeave={() => setIsHovered2(false)}
+            type="submit" className="btn btn-secondary m-2"
+            onClick={() => navigate('/proveedores')}
           >
             <i className="bi bi-box-arrow-up m-1" />ACTUALIZAR
 
           </button>
           <button
+            style={{
+              backgroundColor: isHovered ? '#f6952c' : '#ffff',
+              color: isHovered ? '#fff' : '#f6952c',
+              borderColor: '#f6952c',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             type="button"
             className="btn btn-outline-secondary"
             onClick={() => navigate('/proveedores')}

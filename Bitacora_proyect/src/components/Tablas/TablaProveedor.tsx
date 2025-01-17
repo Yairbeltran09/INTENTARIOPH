@@ -103,72 +103,137 @@ const ProveedorTable: React.FC = () => {
     <>
       <div className='p-2' style={{ backgroundColor: '#ffff', borderBlockEndColor: '10px' }}>
         <div className="table-responsive hv-100" style={{ maxHeight: '50vh' }}>
-          <thead>
-            <tr>
-              <th>
-                <FormControl
-                  size="sm"
-                  type="text"
-                  placeholder="Filtrar nombre"
-                  value={filterNombre}
-                  onChange={(e) => setFilterNombre(e.target.value)}
-                />
-                Nombre
-              </th>
-              <th>
-                <FormControl
-                  size="sm"
-                  type="text"
-                  placeholder="Filtrar correo"
-                  value={filterCorreo}
-                  onChange={(e) => setFilterCorreo(e.target.value)}
-                />
-                Correo
-              </th>
-              <th>
-                <FormControl
-                  size="sm"
-                  type="text"
-                  placeholder="Filtrar contacto"
-                  value={filterNombreContacto}
-                  onChange={(e) => setFilterNombreContacto(e.target.value)}
-                />
-                Contacto
-              </th>
-              <th>
-                <FormControl
-                  size="sm"
-                  type="text"
-                  placeholder="Filtrar número"
-                  value={filterNumeroContacto}
-                  onChange={(e) => setFilterNumeroContacto(e.target.value)}
-                />
-                Número
-              </th>
-              <th>
-                <FormControl
-                  size="sm"
-                  type="text"
-                  placeholder="Filtrar estado"
-                  value={filterEstado}
-                  onChange={(e) => setFilterEstado(e.target.value)}
-                />
-                Estado
-              </th>
-              <th className="text-center">
-                <button style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={clearFilters} type="button" className="btn btn-light btn-sm">
-                  <i className='bi bi-brush' />
-                </button>
-                <span style={{ display: 'block', marginTop: '4px' }}>
-                  Acciones
-                </span>
-              </th>
-            </tr>
-          </thead>
+          <table className='table table-hover text-nowarp'>
+            <thead>
+              <tr>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar nombre"
+                    value={filterNombre}
+                    onChange={(e) => setFilterNombre(e.target.value)}
+                  />
+                  Nombre
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar correo"
+                    value={filterCorreo}
+                    onChange={(e) => setFilterCorreo(e.target.value)}
+                  />
+                  Correo
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar contacto"
+                    value={filterNombreContacto}
+                    onChange={(e) => setFilterNombreContacto(e.target.value)}
+                  />
+                  Contacto
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar número"
+                    value={filterNumeroContacto}
+                    onChange={(e) => setFilterNumeroContacto(e.target.value)}
+                  />
+                  Número
+                </th>
+                <th>
+                  <FormControl
+                    size="sm"
+                    type="text"
+                    placeholder="Filtrar estado"
+                    value={filterEstado}
+                    onChange={(e) => setFilterEstado(e.target.value)}
+                  />
+                  Estado
+                </th>
+                <th className="text-center">
+                  <button style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={clearFilters} type="button" className="btn btn-light btn-sm">
+                    <i className='bi bi-brush' />
+                  </button>
+                  <span style={{ display: 'block', marginTop: '4px' }}>
+                    Acciones
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentProveedor_internet.map((proveedor) => (
+                <tr key={proveedor.id}>
+                  <td>
+                    <div className="d-flex align-items-center">
+                      <div>
+                        <div >{proveedor.nombre}</div>
+                        <small className="text-muted">ID: {proveedor.id}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{proveedor.correo}</td>
+                  <td>
+                    <div >{proveedor.nombre_contacto}</div>
+                  </td>
+                  <td>{proveedor.numero_contacto}</td>
+                  <td>
+                    <Badge bg={proveedor.estado === 'NO ACTIVO' ? 'danger' : 'success'} className="rounded-pill">
+                      {proveedor.estado}
+                    </Badge>
+                  </td>
+                  <td>
+                    <div className="d-flex justify-content-end btn-group" role="group">
+                      <Link to={`/EditarProveedor/${proveedor.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}>
+                        <i className="bi bi-pencil"></i>
+                      </Link>
+                      <button
+                        className="btn btn-sm"
+                        style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                        onClick={() => handleDelete(proveedor.id)}
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
       </div>
-
+      <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', backgroundColor: '#ffff', borderBottom: '20px' }}>
+        <ul className="pagination pagination-sm" >
+          <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+            <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
+              <i className="bi bi-chevron-double-left"></i>
+            </button>
+          </li>
+          <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+            <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage - 1)}>
+              <i className="bi bi-chevron-left"></i>
+            </button>
+          </li>
+          <li className=" m-1 page-item active">
+            <span className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}>{currentPage}</span>
+          </li>
+          <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+            <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage + 1)}>
+              <i className="bi bi-chevron-right"></i>
+            </button>
+          </li>
+          <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+            <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(totalPages)}>
+              <i className="bi bi-chevron-double-right"></i>
+            </button>
+          </li>
+        </ul>
+      </Card.Footer>
     </>
   );
 };
