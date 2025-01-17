@@ -56,10 +56,16 @@ const Sidebar: React.FC = () => {
       items: [
         {
           label: "Modems",
-          icon: "",
+          icon: "M3 13m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z M17 17l0 .01 M13 17l0 .01 M15 13l0 -2 M11.75 8.75a4 4 0 0 1 6.5 0 M8.5 6.5a8 8 0 0 1 13 0",
           path: "/modems",
-          rolesAllowed: [1],
+
         },
+        {
+          label: "Envios",
+          icon: "M4 18v3h16v-14l-8 -4l-8 4v3 M4 14h9 M10 11l3 3l-3 3",
+          path: "/envios",
+
+        }
       ],
     },
     {

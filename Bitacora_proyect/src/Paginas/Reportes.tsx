@@ -1,7 +1,8 @@
 
 import { Button } from "react-bootstrap";
-import  Layout from "../components/Layout/Layout";
+import Layout from "../components/Layout/Layout";
 import ReportesTable from "../components/Tablas/TablaReportes";
+import { Link } from "react-router-dom";
 
 export const Reportes = () => {
   return (
@@ -17,9 +18,11 @@ export const Reportes = () => {
           </nav>
         </div>
         <div className="ms-auto">
-          <Button className="btn" style={{ backgroundColor: '#f6952c', borderColor: '#f6952c' }}>
-            <i className="bi bi-plus-circle-fill me-2"></i> Agregar Reporte
-          </Button>
+          <Link to="/CrearReporte">
+            <Button className="btn" style={{ backgroundColor: '#f6952c', borderColor: '#f6952c' }}>
+              <i className="bi bi-plus-circle-fill me-2"></i> Agregar Reporte
+            </Button>
+          </Link>
         </div>
       </div>
       <div>

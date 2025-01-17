@@ -10,7 +10,7 @@ const ProveedorTable: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 10;
 
   const [filterNombre, setFilterNombre] = useState('');
   const [filterCorreo, setFilterCorreo] = useState('');
@@ -101,142 +101,74 @@ const ProveedorTable: React.FC = () => {
 
   return (
     <>
-      <div className="col-lg-12">
-        <Card className="stretch stretch-full">
-          <Card.Body className="p-0">
-            <div className="table-responsive">
-              <table className="table table-hover mb-0">
-                <thead>
-                  <tr>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar nombre"
-                        value={filterNombre}
-                        onChange={(e) => setFilterNombre(e.target.value)}
-                      />
-                      Nombre
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar correo"
-                        value={filterCorreo}
-                        onChange={(e) => setFilterCorreo(e.target.value)}
-                      />
-                      Correo
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar contacto"
-                        value={filterNombreContacto}
-                        onChange={(e) => setFilterNombreContacto(e.target.value)}
-                      />
-                      Contacto
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar número"
-                        value={filterNumeroContacto}
-                        onChange={(e) => setFilterNumeroContacto(e.target.value)}
-                      />
-                      Número
-                    </th>
-                    <th>
-                      <FormControl
-                        size="sm"
-                        type="text"
-                        placeholder="Filtrar estado"
-                        value={filterEstado}
-                        onChange={(e) => setFilterEstado(e.target.value)}
-                      />
-                      Estado
-                    </th>
-                    <th className="text-center">
-                      <button onClick={clearFilters} type="button" className="btn btn-light btn-sm">
-                        <i className='bi bi-brush' />
-                      </button>
-                      <span style={{ display: 'block', marginTop: '4px' }}>
-                        Acciones
-                      </span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentProveedor_internet.map((proveedor) => (
-                    <tr key={proveedor.id}>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <div>
-                            <div >{proveedor.nombre}</div>
-                            <small className="text-muted">ID: {proveedor.id}</small>
-                          </div>
-                        </div>
-                      </td>
-                      <td>{proveedor.correo}</td>
-                      <td>
-                        <div >{proveedor.nombre_contacto}</div>
-                      </td>
-                      <td>{proveedor.numero_contacto}</td>
-                      <td>
-                        <Badge bg={proveedor.estado === 'NO ACTIVO' ? 'danger' : 'success'} className="rounded-pill">
-                          {proveedor.estado}
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="d-flex gap-2 justify-content-end">
-                          <Link to={`/EditarProveedor/${proveedor.id}`} className="btn btn-light btn-sm">
-                            <i className="bi bi-pencil"></i>
-                          </Link>
-                          <button
-                            className="btn btn-light btn-sm"
-                            onClick={() => handleDelete(proveedor.id)}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card.Body>
-          <Card.Footer>
-            <ul className="pagination pagination-sm mb-0">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(1)}>
-                  <i className="bi bi-chevron-double-left"></i>
+      <div className='p-2' style={{ backgroundColor: '#ffff', borderBlockEndColor: '10px' }}>
+        <div className="table-responsive hv-100" style={{ maxHeight: '50vh' }}>
+          <thead>
+            <tr>
+              <th>
+                <FormControl
+                  size="sm"
+                  type="text"
+                  placeholder="Filtrar nombre"
+                  value={filterNombre}
+                  onChange={(e) => setFilterNombre(e.target.value)}
+                />
+                Nombre
+              </th>
+              <th>
+                <FormControl
+                  size="sm"
+                  type="text"
+                  placeholder="Filtrar correo"
+                  value={filterCorreo}
+                  onChange={(e) => setFilterCorreo(e.target.value)}
+                />
+                Correo
+              </th>
+              <th>
+                <FormControl
+                  size="sm"
+                  type="text"
+                  placeholder="Filtrar contacto"
+                  value={filterNombreContacto}
+                  onChange={(e) => setFilterNombreContacto(e.target.value)}
+                />
+                Contacto
+              </th>
+              <th>
+                <FormControl
+                  size="sm"
+                  type="text"
+                  placeholder="Filtrar número"
+                  value={filterNumeroContacto}
+                  onChange={(e) => setFilterNumeroContacto(e.target.value)}
+                />
+                Número
+              </th>
+              <th>
+                <FormControl
+                  size="sm"
+                  type="text"
+                  placeholder="Filtrar estado"
+                  value={filterEstado}
+                  onChange={(e) => setFilterEstado(e.target.value)}
+                />
+                Estado
+              </th>
+              <th className="text-center">
+                <button style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={clearFilters} type="button" className="btn btn-light btn-sm">
+                  <i className='bi bi-brush' />
                 </button>
-              </li>
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(currentPage - 1)}>
-                  <i className="bi bi-chevron-left"></i>
-                </button>
-              </li>
-              <li className="page-item active">
-                <span className="page-link text-dark bg-light border-secondary">{currentPage}</span>
-              </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(currentPage + 1)}>
-                  <i className="bi bi-chevron-right"></i>
-                </button>
-              </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link text-dark bg-white border-secondary" onClick={() => handlePageChange(totalPages)}>
-                  <i className="bi bi-chevron-double-right"></i>
-                </button>
-              </li>
-            </ul>
-          </Card.Footer>
-        </Card>
+                <span style={{ display: 'block', marginTop: '4px' }}>
+                  Acciones
+                </span>
+              </th>
+            </tr>
+          </thead>
+        </div>
+
       </div>
+
     </>
   );
 };

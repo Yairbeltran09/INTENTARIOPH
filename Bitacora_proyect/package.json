@@ -19,6 +19,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.2",
     "@tabler/icons-react": "^3.26.0",
     "axios": "^1.7.7",
+    "boostrap": "^2.0.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "classnames": "^2.5.1",

@@ -35,7 +35,9 @@ const CrearReporte: React.FC = () => {
   const navigate = useNavigate();
   const [farmacias, setFarmacias] = useState<IFarmacia[]>([]);
   const [motivos, setMotivos] = useState<IMotivo[]>([]);
-  
+  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered2, setIsHovered2] = useState(false);
+
   const getCurrentDateTime = () => {
     const now = new Date();
     return now.toISOString().slice(0, 16);
@@ -77,7 +79,7 @@ const CrearReporte: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
+
     if (name === 'farmacia') {
       const farmaciaSeleccionada = farmacias.find(f => f.id === parseInt(value));
       setReporte(prev => ({
@@ -146,11 +148,9 @@ const CrearReporte: React.FC = () => {
   };
 
   return (
-    <div className="card-body">
+    <div className="p-3 border" style={{ color: 'black', backgroundColor: 'white', borderRadius: '0.6rem' }}>
       <h5 className="card-title">Nuevo Reporte</h5>
-      <hr />
       <br />
-
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
           <label htmlFor="farmacia" className="form-label">Farmacia*</label>
@@ -211,10 +211,29 @@ const CrearReporte: React.FC = () => {
         </div>
 
         <div className="text-center">
-          <button type="submit" className="btn btn-secondary m-2">
+          <button
+            style={{
+              backgroundColor: '#f6952c', borderColor: '#f6952c',
+              cursor: 'pointer',
+              background: isHovered2 ? '#ffff' : '#f6952c',
+
+              color: isHovered2 ? '#f6952c' : '#ffff',
+
+            }}
+            onMouseEnter={() => setIsHovered2(true)}
+            onMouseLeave={() => setIsHovered2(false)}
+            type="submit" className="btn btn-secondary m-2">
             <i className="bi bi-floppy m-1" />GUARDAR
           </button>
           <button
+            style={{
+              backgroundColor: isHovered ? '#f6952c' : '#ffff',
+              color: isHovered ? '#fff' : '#f6952c',
+              borderColor: '#f6952c',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             type="button"
             className="btn btn-outline-secondary"
             onClick={handleReset}

@@ -87,8 +87,6 @@ function FormularioCrear() {
 
   return (
     <div className="card-body">
-      <h5 className="card-title">Nuevo Proveedor</h5>
-      <hr />
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
           <label htmlFor="nombre" className="form-label">Nombre*</label>
