@@ -18,6 +18,8 @@ public class Modems {
     @JoinColumn(name = "ubicacion_modems")
     private Farmacias farmacia;
 
+    private Boolean isDeleted = false;
+
     public String getEstado() {
         return estado;
     }
@@ -65,5 +67,13 @@ public class Modems {
 
     public void setMarca(String marca) {
         this.marca = marca;
+    }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setISDeleted(Boolean deleted) {
+        isDeleted = isDeleted;
     }
 }

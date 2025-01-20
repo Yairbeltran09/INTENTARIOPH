@@ -1,6 +1,8 @@
 package com.pharmaser.bitacora.service;
 
 
+
+import com.pharmaser.bitacora.model.Farmacias;
 import com.pharmaser.bitacora.model.Modems;
 import com.pharmaser.bitacora.repository.ModemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ public class ModemsService {
     private ModemsRepository modemsRepo;
 
     public List<Modems> findAll() {
-        return modemsRepo.findAll();
+        return modemsRepo.findAllByIsDeletedFalse();
     }
 
     public Modems findById(Long id) {
@@ -26,7 +28,11 @@ public class ModemsService {
         return modemsRepo.save(modem);
     }
 
-    public void delete(Long id) {
-        modemsRepo.deleteById(id);
+    public void softDelete(Long id) {
+        Modems modems = modemsRepo.findById(id).orElse(null);
+        if (modems != null) {
+            modems.setISDeleted(true);
+            modemsRepo.save(modems);
+        }
     }
 }

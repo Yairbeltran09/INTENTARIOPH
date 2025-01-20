@@ -21,15 +21,15 @@ export const login = async (username: string, password: string): Promise<User> =
     );
 
     if (!user) {
-      //throw new Error('Credenciales inválidas');
+      
     }
 
-    // Verificar que el usuario tenga la estructura correcta antes de guardarlo
+  
     if (!user.role || typeof user.role.id === 'undefined') {
       throw new Error('Estructura de usuario inválida');
     }
 
-    // Guardar información del usuario en localStorage
+ 
     const userInfo = {
       id: user.id,
       username: user.username,

@@ -2,6 +2,7 @@ package com.pharmaser.bitacora.controller;
 
 
 
+import com.pharmaser.bitacora.model.Farmacias;
 import com.pharmaser.bitacora.model.Modems;
 import com.pharmaser.bitacora.service.ModemsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +50,11 @@ public class ModemsController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteModems(@PathVariable Long id) {
-        if (modemsService.findById(id) != null) {
-            modemsService.delete(id);
+    @PutMapping("/softDelete/{id}")
+    public ResponseEntity<Void> softDeleteModem(@PathVariable Long id) {
+        Modems modems = modemsService.findById(id);
+        if (modems != null) {
+            modemsService.softDelete(id);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
