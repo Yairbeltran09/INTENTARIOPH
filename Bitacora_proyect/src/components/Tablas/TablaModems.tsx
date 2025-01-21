@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Badge, FormControl, Card } from 'react-bootstrap';
 import Swal from 'sweetalert2';
-import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { getModems, deleteModems } from '../../servicios/modemService';
 
@@ -48,6 +47,19 @@ interface iModems {
             nombre: string;
         }
     }
+    operador: {
+        id: number;
+        nombre: string;
+        nombre_contacto: string;
+        numero_contacto: number;
+        nit: number;
+        correo: string;
+        estado: string;
+        isDeleted: false;
+        observacion: null;
+        fecha_contratacion: null;
+    }
+    numero: number;
     observacion: string;
 }
 
@@ -65,6 +77,8 @@ const ModemsTable: React.FC = () => {
     const [filterModelo, setFilterModelo] = useState<string | null>(null);
     const [filterNumeroSerie, setFilterNumeroSerie] = useState<string | null>(null);
     const [filterUbicacion, setFilterUbicacion] = useState<string | null>(null);
+    const [filterOperador, setOperador] = useState<string | null>(null);
+    const [filterNumero, setNumero] = useState<string | null>(null);
 
     useEffect(() => {
         const loadModems = async () => {
@@ -98,34 +112,33 @@ const ModemsTable: React.FC = () => {
 
     const filteredModems = () => {
         const filtered = modems.filter(modem => {
-            const IfFilterEstado = filterEstado === null || modem.estado.toLowerCase().includes(filterEstado.toLowerCase());
-            const IfFilterMarca = filterMarca === null || modem.marca.toLowerCase().includes(filterMarca.toLowerCase());
-            const IfFilterModelo = filterModelo === null || modem.modelo.toLowerCase().includes(filterModelo.toLowerCase());
-            const IfFilterNumeroSerie = filterNumeroSerie === null || modem.numero_serie.toLowerCase().includes(filterNumeroSerie.toLowerCase());
-            const IfFilterUbicacion = filterUbicacion === null || modem.ubicacion.toLowerCase().includes(filterUbicacion.toLowerCase());
-            
+            const IfFilterEstado = !filterEstado || modem.estado?.toString().toLowerCase().includes(filterEstado.toLowerCase());
+            const IfFilterOperador = !filterOperador || modem.operador?.toString().toLowerCase().includes(filterOperador.toLowerCase());
+            const IfFilterMarca = !filterMarca || modem.marca?.toString().toLowerCase().includes(filterMarca.toLowerCase());
+            const IfFilterModelo = !filterModelo || modem.modelo?.toString().toLowerCase().includes(filterModelo.toLowerCase());
+            const IfFilterNumeroSerie = !filterNumeroSerie || modem.numero_serie?.toString().toLowerCase().includes(filterNumeroSerie.toLowerCase());
+            const IfFilterUbicacion = !filterUbicacion || modem.ubicacion?.toString().toLowerCase().includes(filterUbicacion.toLowerCase());
+            const IfFilterNumero = !filterNumero || modem.numero?.toString().toLowerCase().includes(filterNumero.toLowerCase());
 
-            return IfFilterFecha && IfFilterFarmacia && IfFilterFechaHoraInicio && IfFilterFechaHoraFin && IfFilterDuracionIncidente && IfFilterProveedor && IfFilterMotivo && IfFilterEstado;
+            return IfFilterEstado && IfFilterMarca && IfFilterModelo && IfFilterNumeroSerie && IfFilterUbicacion && IfFilterOperador && IfFilterNumero;
         });
-        return filtered.reverse();
-    }
+        return [...filtered].reverse();
+    };
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentReportes = filteredReportes().slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(filteredReportes().length / itemsPerPage);
+    const currentModems = filteredModems().slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredModems().length / itemsPerPage);
 
     const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const clearFilters = () => {
-        setFilterDuracionIncidente('');
+
         setFilterEstado('');
-        setFilterFarmacia('');
-        setFilterFecha('');
-        setFilterFechaHoraFin('');
-        setFilterFechaHoraInicio('');
-        setFilterMotivo('');
-        setFilterProveedor('');
+        setFilterMarca('');
+        setFilterModelo('');
+        setFilterNumeroSerie('');
+        setFilterUbicacion('');
     };
 
     const handleDelete = async (id: number) => {
@@ -142,12 +155,12 @@ const ModemsTable: React.FC = () => {
             });
 
             if (result.isConfirmed) {
-                await deleteReporte(id);
-                setReportes(reportes.filter(reporte => reporte.id !== id));
+                await deleteModems(id);
+                setModems(modems.filter(modem => modem.id !== id));
 
                 Swal.fire(
                     '¡Eliminado!',
-                    'El reporte ha sido eliminado.',
+                    'El Modem ha sido eliminado.',
                     'success'
                 );
             }
@@ -156,7 +169,7 @@ const ModemsTable: React.FC = () => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'No se pudo eliminar el reporte'
+                text: 'No se pudo eliminar el Modem'
             });
         }
     };
@@ -172,72 +185,62 @@ const ModemsTable: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar fecha"
-                                        value={filterFecha ?? ''}
-                                        onChange={(e) => setFilterFecha(e.target.value)}
+                                        placeholder="Filtrar"
+                                        value={filterMarca ?? ''}
+                                        onChange={(e) => setFilterMarca(e.target.value)}
                                         className="form-control-sm"
                                     />
-                                    Fecha
+                                    MARCA
                                 </th>
                                 <th>
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar farmacia"
-                                        value={filterFarmacia ?? ''}
-                                        onChange={(e) => setFilterFarmacia(e.target.value)}
+                                        placeholder="Filtrar"
+                                        value={filterModelo ?? ''}
+                                        onChange={(e) => setFilterModelo(e.target.value)}
                                     />
-                                    Farmacia
+                                    MODELO
                                 </th>
                                 <th>
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar inicio"
-                                        value={filterFechaHoraInicio ?? ''}
-                                        onChange={(e) => setFilterFechaHoraInicio(e.target.value)}
+                                        placeholder="Filtrar"
+                                        value={filterNumeroSerie ?? ''}
+                                        onChange={(e) => setFilterNumeroSerie(e.target.value)}
                                     />
-                                    Fecha/Hora Inicio
+                                    SERIAL
                                 </th>
                                 <th>
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar fin"
-                                        value={filterFechaHoraFin ?? ''}
-                                        onChange={(e) => setFilterFechaHoraFin(e.target.value)}
+                                        placeholder="Filtrar"
+                                        value={filterUbicacion ?? ''}
+                                        onChange={(e) => setFilterUbicacion(e.target.value)}
                                     />
-                                    Fecha/Hora Fin
+                                    UBICACION
                                 </th>
                                 <th>
                                     <FormControl
-                                        size="sm"
-                                        type="text"
-                                        placeholder="Filtrar duración"
-                                        value={filterDuracionIncidente ?? ''}
-                                        onChange={(e) => setFilterDuracionIncidente(e.target.value)}
+                                        size='sm'
+                                        type='text'
+                                        placeholder='Filtrar'
+                                        value={filterOperador ?? ''}
+                                        onChange={(e) => setOperador(e.target.value)}
                                     />
-                                    Duración
+                                    OPERADOR
                                 </th>
                                 <th>
                                     <FormControl
-                                        size="sm"
-                                        type="text"
-                                        placeholder="Filtrar proveedor"
-                                        value={filterProveedor ?? ''}
-                                        onChange={(e) => setFilterProveedor(e.target.value)}
+                                        size='sm'
+                                        type='number'
+                                        placeholder='Filtrar'
+                                        value={filterNumero ?? ''}
+                                        onChange={(e) => setNumero(e.target.value)}
                                     />
-                                    Proveedor
-                                </th>
-                                <th>
-                                    <FormControl
-                                        size="sm"
-                                        type="text"
-                                        placeholder="Filtrar motivo"
-                                        value={filterMotivo ?? ''}
-                                        onChange={(e) => setFilterMotivo(e.target.value)}
-                                    />
-                                    Motivo
+                                    NUMERO
                                 </th>
                                 <th>
                                     <FormControl
@@ -247,7 +250,7 @@ const ModemsTable: React.FC = () => {
                                         value={filterEstado ?? ''}
                                         onChange={(e) => setFilterEstado(e.target.value)}
                                     />
-                                    Estado
+                                    ESTADO
                                 </th>
                                 <th className="text-center">
                                     <button style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={clearFilters} type="button" className="btn btn-light btn-sm">
@@ -260,48 +263,49 @@ const ModemsTable: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentReportes.map((reporte) => (
-                                <tr key={reporte.id}>
+                            {currentModems.map((modem) => (
+                                <tr key={modem.id}>
                                     <td>
                                         <div className="d-flex align-items-center">
                                             <div>
-                                                <div>{reporte.fecha}</div>
-                                                <small className="text-muted">ID: {reporte.id}</small>
+                                                <div>{modem.marca}</div>
+                                                <small className="text-muted">ID: {modem.id}</small>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <div>{reporte.farmacia.nombre}</div>
+                                        <div>{modem.modelo}</div>
                                     </td>
                                     <td>
-                                        <div>{format(new Date(reporte.fecha_hora_inicio), 'yyyy-MM-dd')}</div>
-                                        <small className="text-muted">{format(new Date(reporte.fecha_hora_inicio), 'HH:mm:ss')}</small>
+                                        <div>{modem.numero_serie}</div>
+
+                                    </td>
+
+                                    <td>
+                                        <div>{modem.ubicacion?.nombre}</div>
+
                                     </td>
                                     <td>
-                                        <div>{format(new Date(reporte.fecha_hora_fin), 'yyyy-MM-dd')}</div>
-                                        <small className="text-muted">{format(new Date(reporte.fecha_hora_fin), 'HH:mm:ss')}</small>
+                                        <div>{modem.operador?.nombre}</div>
                                     </td>
-                                    <td>{reporte.duracion_incidente}</td>
                                     <td>
-                                        <div>{reporte.farmacia.proveedor.nombre}</div>
-                                        <small className="text-muted">NIT: {reporte.farmacia.proveedor.nit}</small>
+                                        <div>{modem.numero}</div>
                                     </td>
-                                    <td>{reporte.motivo?.motivo || "Sin motivo"}</td>
                                     <td>
-                                        <Badge bg={reporte.estado === 'ABIERTO' ? 'success' : 'danger'} className="rounded-pill">
-                                            {reporte.estado}
+                                        <Badge bg={modem.estado === 'ACTIVO' ? 'success' : 'danger'} className="rounded-pill">
+                                            {modem.estado}
                                         </Badge>
                                     </td>
                                     <td>
                                         <div className="d-flex justify-content-end btn-group" role="group">
 
-                                            <Link to={`/EditarReporte/${reporte.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
+                                            <Link to={`/EditarModem/${modem.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
                                                 <i className="bi bi-pencil"></i>
                                             </Link>
                                             <button
                                                 className="btn btn-sm"
                                                 style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
-                                                onClick={() => handleDelete(reporte.id)}
+                                                onClick={() => handleDelete(modem.id)}
                                             >
                                                 <i className="bi bi-trash"></i>
                                             </button>
@@ -345,5 +349,5 @@ const ModemsTable: React.FC = () => {
     );
 };
 
-export default ReporteTable;
+export default ModemsTable;
 

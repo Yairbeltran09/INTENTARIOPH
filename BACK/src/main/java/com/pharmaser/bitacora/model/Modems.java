@@ -1,6 +1,8 @@
 package com.pharmaser.bitacora.model;
 
 import jakarta.persistence.*;
+
+import java.math.BigInteger;
 import java.security.Timestamp;
 
 @Entity
@@ -13,10 +15,15 @@ public class Modems {
     private String marca;
     private String modelo;
     private String estado;
+    private BigInteger numero;
 
     @ManyToOne
     @JoinColumn(name = "ubicacion_modems")
     private Farmacias farmacia;
+
+    @ManyToOne
+    @JoinColumn(name = "Operador")
+    private ProveedorInternet proveedorInternet;
 
     private Boolean isDeleted = false;
 
@@ -75,5 +82,21 @@ public class Modems {
 
     public void setISDeleted(Boolean deleted) {
         isDeleted = isDeleted;
+    }
+
+    public BigInteger getNumero() {
+        return numero;
+    }
+
+    public void setNumero(BigInteger numero) {
+        this.numero = numero;
+    }
+
+    public ProveedorInternet getProveedorInternet() {
+        return proveedorInternet;
+    }
+
+    public void setProveedorInternet(ProveedorInternet proveedorInternet) {
+        this.proveedorInternet = proveedorInternet;
     }
 }

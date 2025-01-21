@@ -44,6 +44,8 @@ public class ModemsController {
             updatedModems.setEstado(modemsDetails.getEstado());
             updatedModems.setFarmacia(modemsDetails.getFarmacia());
             updatedModems.setEstado(modemsDetails.getEstado());
+            updatedModems.setNumero(modemsDetails.getNumero());
+            updatedModems.setProveedorInternet(modemsDetails.getProveedorInternet());
             return ResponseEntity.ok(modemsService.save(updatedModems));
         } else {
             return ResponseEntity.notFound().build();
