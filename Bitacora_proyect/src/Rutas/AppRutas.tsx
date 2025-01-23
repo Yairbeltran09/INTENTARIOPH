@@ -10,7 +10,9 @@ import { EditarFarmacia } from "../Paginas/EditarFarmacias"
 import { CrearReporte } from "../Paginas/CrearReportes"
 import { EditarReporte } from "../Paginas/EditarReporte"
 import { Modems } from "../Paginas/Modems"
+import { EnviosModems } from "../Paginas/EnvioModems"
 import ProtectedRoute from "../Rutas/ProtectedRoute"
+
 
 export const AppRutas = () => {
     return (
@@ -68,6 +70,11 @@ export const AppRutas = () => {
             <Route path="/modems" element={
                 <ProtectedRoute allowedRoles={[1, 2]}>
                     <Modems />
+                </ProtectedRoute>
+            } />
+            <Route path="/EnvioModems" element={
+                <ProtectedRoute allowedRoles={[1, 2]}>
+                    <EnviosModems />
                 </ProtectedRoute>
             } />
 

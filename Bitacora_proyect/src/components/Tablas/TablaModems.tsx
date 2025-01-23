@@ -10,59 +10,17 @@ interface iModems {
     marca: string;
     modelo: string;
     numero_serie: string;
-    ubicacion: {
-        id: number;
-        achobanda: string;
-        coordenadas: string;
-        direccion: string;
-        nombre: string;
-        pertenece: string;
-        canal_transmision: {
-            id: number;
-            nombre: string;
-        }
-        ciudad: {
-            id: number;
-            nombre_ciudad: string;
-            departamento: {
-                id: number;
-                nombre_departamento: string;
-            }
-        }
-        proveedorInternet: {
-            id: number;
-            nombre: string;
-            nombre_contacto: string;
-            numero_contacto: number;
-            nit: number;
-            correo: string;
-            estado: string;
-            isDeleted: false;
-            observacion: null;
-            fecha_contratacion: null;
-        }
-        regente: null;
-        canalTransmision: {
-            id: number;
-            nombre: string;
-        }
-    }
-    operador: {
+    farmacia: {
         id: number;
         nombre: string;
-        nombre_contacto: string;
-        numero_contacto: number;
-        nit: number;
-        correo: string;
-        estado: string;
-        isDeleted: false;
-        observacion: null;
-        fecha_contratacion: null;
-    }
+    };
+    proveedorInternet: {
+        id: number;
+        nombre: string;
+    };
     numero: number;
-    observacion: string;
+    isDeleted: boolean;
 }
-
 
 const ModemsTable: React.FC = () => {
     const [modems, setModems] = useState<iModems[]>([]);
@@ -72,13 +30,13 @@ const ModemsTable: React.FC = () => {
     const itemsPerPage = 10;
 
     // Filtros
-    const [filterEstado, setFilterEstado] = useState<string | null>(null);
-    const [filterMarca, setFilterMarca] = useState<string | null>(null);
-    const [filterModelo, setFilterModelo] = useState<string | null>(null);
-    const [filterNumeroSerie, setFilterNumeroSerie] = useState<string | null>(null);
-    const [filterUbicacion, setFilterUbicacion] = useState<string | null>(null);
-    const [filterOperador, setOperador] = useState<string | null>(null);
-    const [filterNumero, setNumero] = useState<string | null>(null);
+    const [filterEstado, setFilterEstado] = useState<string>('');
+    const [filterMarca, setFilterMarca] = useState<string>('');
+    const [filterModelo, setFilterModelo] = useState<string>('');
+    const [filterNumeroSerie, setFilterNumeroSerie] = useState<string>('');
+    const [filterUbicacion, setFilterUbicacion] = useState<string>('');
+    const [filterOperador, setFilterOperador] = useState<string>('');
+    const [filterNumero, setFilterNumero] = useState<string>('');
 
     useEffect(() => {
         const loadModems = async () => {
@@ -95,7 +53,7 @@ const ModemsTable: React.FC = () => {
                 const data = await getModems();
                 setModems(data);
             } catch (error) {
-                setError('Error al cargar el listado de Modems');
+                setError('Error al cargar el listado de Módems');
                 console.error(error);
             } finally {
                 setLoading(false);
@@ -109,36 +67,34 @@ const ModemsTable: React.FC = () => {
     if (loading) return <div>Cargando...</div>;
     if (error) return <div>{error}</div>;
 
+    const filteredModems = modems.filter(modem => {
+        const matchEstado = modem.estado?.toLowerCase().includes(filterEstado.toLowerCase());
+        const matchOperador = modem.proveedorInternet?.nombre.toLowerCase().includes(filterOperador.toLowerCase());
+        const matchMarca = modem.marca?.toLowerCase().includes(filterMarca.toLowerCase());
+        const matchModelo = modem.modelo?.toLowerCase().includes(filterModelo.toLowerCase());
+        const matchNumeroSerie = modem.numero_serie?.toLowerCase().includes(filterNumeroSerie.toLowerCase());
+        const matchUbicacion = modem.farmacia?.nombre.toLowerCase().includes(filterUbicacion.toLowerCase());
+        const matchNumero = modem.numero?.toString().includes(filterNumero);
 
-    const filteredModems = () => {
-        const filtered = modems.filter(modem => {
-            const IfFilterEstado = !filterEstado || modem.estado?.toString().toLowerCase().includes(filterEstado.toLowerCase());
-            const IfFilterOperador = !filterOperador || modem.operador?.toString().toLowerCase().includes(filterOperador.toLowerCase());
-            const IfFilterMarca = !filterMarca || modem.marca?.toString().toLowerCase().includes(filterMarca.toLowerCase());
-            const IfFilterModelo = !filterModelo || modem.modelo?.toString().toLowerCase().includes(filterModelo.toLowerCase());
-            const IfFilterNumeroSerie = !filterNumeroSerie || modem.numero_serie?.toString().toLowerCase().includes(filterNumeroSerie.toLowerCase());
-            const IfFilterUbicacion = !filterUbicacion || modem.ubicacion?.toString().toLowerCase().includes(filterUbicacion.toLowerCase());
-            const IfFilterNumero = !filterNumero || modem.numero?.toString().toLowerCase().includes(filterNumero.toLowerCase());
-
-            return IfFilterEstado && IfFilterMarca && IfFilterModelo && IfFilterNumeroSerie && IfFilterUbicacion && IfFilterOperador && IfFilterNumero;
-        });
-        return [...filtered].reverse();
-    };
+        return matchEstado && matchOperador && matchMarca && matchModelo && 
+            matchNumeroSerie && matchUbicacion && matchNumero;
+    });
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentModems = filteredModems().slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(filteredModems().length / itemsPerPage);
+    const currentModems = filteredModems.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredModems.length / itemsPerPage);
 
     const handlePageChange = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const clearFilters = () => {
-
         setFilterEstado('');
         setFilterMarca('');
         setFilterModelo('');
         setFilterNumeroSerie('');
         setFilterUbicacion('');
+        setFilterOperador('');
+        setFilterNumero('');
     };
 
     const handleDelete = async (id: number) => {
@@ -156,11 +112,11 @@ const ModemsTable: React.FC = () => {
 
             if (result.isConfirmed) {
                 await deleteModems(id);
-                setModems(modems.filter(modem => modem.id !== id));
+                setModems(prevModems => prevModems.filter(modem => modem.id !== id));
 
                 Swal.fire(
                     '¡Eliminado!',
-                    'El Modem ha sido eliminado.',
+                    'El Módem ha sido eliminado.',
                     'success'
                 );
             }
@@ -169,15 +125,15 @@ const ModemsTable: React.FC = () => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'No se pudo eliminar el Modem'
+                text: 'No se pudo eliminar el Módem'
             });
         }
     };
 
     return (
         <>
-            <div className='p-2' style={{ backgroundColor: '#ffff', borderBlockEndColor: '10px' }}>
-                <div className='table-responsive hv-100' style={{ maxHeight: '50vh' }} >
+            <div className='p-2' style={{ backgroundColor: '#ffff' }}>
+                <div className='table-responsive' style={{ maxHeight: '50vh' }}>
                     <table className='table table-hover text-nowrap'>
                         <thead>
                             <tr>
@@ -185,10 +141,9 @@ const ModemsTable: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar"
-                                        value={filterMarca ?? ''}
+                                        placeholder="Filtrar marca"
+                                        value={filterMarca}
                                         onChange={(e) => setFilterMarca(e.target.value)}
-                                        className="form-control-sm"
                                     />
                                     MARCA
                                 </th>
@@ -196,8 +151,8 @@ const ModemsTable: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar"
-                                        value={filterModelo ?? ''}
+                                        placeholder="Filtrar modelo"
+                                        value={filterModelo}
                                         onChange={(e) => setFilterModelo(e.target.value)}
                                     />
                                     MODELO
@@ -206,8 +161,8 @@ const ModemsTable: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar"
-                                        value={filterNumeroSerie ?? ''}
+                                        placeholder="Filtrar serial"
+                                        value={filterNumeroSerie}
                                         onChange={(e) => setFilterNumeroSerie(e.target.value)}
                                     />
                                     SERIAL
@@ -216,44 +171,48 @@ const ModemsTable: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar"
-                                        value={filterUbicacion ?? ''}
+                                        placeholder="Filtrar ubicación"
+                                        value={filterUbicacion}
                                         onChange={(e) => setFilterUbicacion(e.target.value)}
                                     />
-                                    UBICACION
+                                    UBICACIÓN
                                 </th>
                                 <th>
                                     <FormControl
                                         size='sm'
                                         type='text'
-                                        placeholder='Filtrar'
-                                        value={filterOperador ?? ''}
-                                        onChange={(e) => setOperador(e.target.value)}
+                                        placeholder='Filtrar operador'
+                                        value={filterOperador}
+                                        onChange={(e) => setFilterOperador(e.target.value)}
                                     />
                                     OPERADOR
                                 </th>
                                 <th>
                                     <FormControl
                                         size='sm'
-                                        type='number'
-                                        placeholder='Filtrar'
-                                        value={filterNumero ?? ''}
-                                        onChange={(e) => setNumero(e.target.value)}
+                                        type='text'
+                                        placeholder='Filtrar número'
+                                        value={filterNumero}
+                                        onChange={(e) => setFilterNumero(e.target.value)}
                                     />
-                                    NUMERO
+                                    NÚMERO
                                 </th>
                                 <th>
                                     <FormControl
                                         size="sm"
                                         type="text"
                                         placeholder="Filtrar estado"
-                                        value={filterEstado ?? ''}
+                                        value={filterEstado}
                                         onChange={(e) => setFilterEstado(e.target.value)}
                                     />
                                     ESTADO
                                 </th>
                                 <th className="text-center">
-                                    <button style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={clearFilters} type="button" className="btn btn-light btn-sm">
+                                    <button 
+                                        className="btn btn-light btn-sm"
+                                        style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} 
+                                        onClick={clearFilters}
+                                    >
                                         <i className='bi bi-brush' />
                                     </button>
                                     <span style={{ display: 'block', marginTop: '4px' }}>
@@ -273,33 +232,23 @@ const ModemsTable: React.FC = () => {
                                             </div>
                                         </div>
                                     </td>
+                                    <td>{modem.modelo}</td>
+                                    <td>{modem.numero_serie}</td>
+                                    <td>{modem.farmacia?.nombre}</td>
+                                    <td>{modem.proveedorInternet?.nombre}</td>
+                                    <td>{modem.numero}</td>
                                     <td>
-                                        <div>{modem.modelo}</div>
-                                    </td>
-                                    <td>
-                                        <div>{modem.numero_serie}</div>
-
-                                    </td>
-
-                                    <td>
-                                        <div>{modem.ubicacion?.nombre}</div>
-
-                                    </td>
-                                    <td>
-                                        <div>{modem.operador?.nombre}</div>
-                                    </td>
-                                    <td>
-                                        <div>{modem.numero}</div>
-                                    </td>
-                                    <td>
-                                        <Badge bg={modem.estado === 'ACTIVO' ? 'success' : 'danger'} className="rounded-pill">
+                                        <Badge bg={modem.estado === 'DISPONIBLE' ? 'success' : 'danger'}>
                                             {modem.estado}
                                         </Badge>
                                     </td>
                                     <td>
-                                        <div className="d-flex justify-content-end btn-group" role="group">
-
-                                            <Link to={`/EditarModem/${modem.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
+                                        <div className="d-flex justify-content-end btn-group">
+                                            <Link 
+                                                to={`/EditarModem/${modem.id}`} 
+                                                className="btn btn-light btn-sm"
+                                                style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                                            >
                                                 <i className="bi bi-pencil"></i>
                                             </Link>
                                             <button
@@ -317,37 +266,56 @@ const ModemsTable: React.FC = () => {
                     </table>
                 </div>
             </div>
-            <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', backgroundColor: '#ffff', borderBottom: '20px' }}>
-                <ul className="pagination pagination-sm" >
+            <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', backgroundColor: '#ffff' }}>
+                <ul className="pagination pagination-sm">
                     <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
+                        <button 
+                            className="page-link" 
+                            style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                            onClick={() => handlePageChange(1)}
+                        >
                             <i className="bi bi-chevron-double-left"></i>
                         </button>
                     </li>
                     <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage - 1)}>
+                        <button 
+                            className="page-link" 
+                            style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                        >
                             <i className="bi bi-chevron-left"></i>
                         </button>
                     </li>
-                    <li className=" m-1 page-item active">
-                        <span className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}>{currentPage}</span>
+                    <li className="m-1 page-item active">
+                        <span 
+                            className="page-link" 
+                            style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                        >
+                            {currentPage}
+                        </span>
                     </li>
-                    <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage + 1)}>
+                    <li className={`m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button 
+                            className="page-link" 
+                            style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                        >
                             <i className="bi bi-chevron-right"></i>
                         </button>
                     </li>
-                    <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(totalPages)}>
+                    <li className={`m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button 
+                            className="page-link" 
+                            style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                            onClick={() => handlePageChange(totalPages)}
+                        >
                             <i className="bi bi-chevron-double-right"></i>
                         </button>
                     </li>
                 </ul>
             </Card.Footer>
-
         </>
     );
 };
 
 export default ModemsTable;
-

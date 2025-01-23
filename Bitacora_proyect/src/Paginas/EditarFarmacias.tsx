@@ -20,6 +20,7 @@ export const EditarFarmacia = () => {
             </ol>
           </nav>
         </div>
+        
         <div className="ms-auto">
         </div>
       </div>

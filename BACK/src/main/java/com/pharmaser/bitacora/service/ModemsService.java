@@ -2,7 +2,7 @@ package com.pharmaser.bitacora.service;
 
 
 
-import com.pharmaser.bitacora.model.Farmacias;
+
 import com.pharmaser.bitacora.model.Modems;
 import com.pharmaser.bitacora.repository.ModemsRepository;
 import org.springframework.beans.factory.annotation.Autowired;

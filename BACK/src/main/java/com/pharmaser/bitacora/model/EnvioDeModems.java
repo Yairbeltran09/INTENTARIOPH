@@ -21,18 +21,10 @@ public class EnvioDeModems {
 
     private Timestamp fecha_envio;
 
-    @ManyToOne
-    @JoinColumn(name = "id_proveedor_envio")
-    private ProveedorEnvio proveedorEnvio;
+
 
     private BigDecimal costo_envio;
     private String estado_envio;
-
-
-
-
-
-
 
 
     public BigDecimal getCosto_envio() {
@@ -42,15 +34,7 @@ public class EnvioDeModems {
     public void setCosto_envio(BigDecimal costo_envio) {
         this.costo_envio = costo_envio;
     }
-
-    public ProveedorEnvio getProveedorEnvio() {
-        return proveedorEnvio;
-    }
-
-    public void setProveedorEnvio(ProveedorEnvio proveedorEnvio) {
-        this.proveedorEnvio = proveedorEnvio;
-    }
-
+    
     public Modems getModem() {
         return modem;
     }

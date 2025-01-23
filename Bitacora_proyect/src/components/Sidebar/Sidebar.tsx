@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
         {
           label: "Envios",
           icon: "M4 18v3h16v-14l-8 -4l-8 4v3 M4 14h9 M10 11l3 3l-3 3",
-          path: "/envios",
+          path: "/EnvioModems",
 
         }
       ],

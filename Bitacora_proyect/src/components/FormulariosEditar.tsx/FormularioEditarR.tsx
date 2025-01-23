@@ -79,6 +79,7 @@ const EditarReporte: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isHovered2, setIsHovered2] = useState(false);
+  
 
   useEffect(() => {
 
@@ -180,6 +181,8 @@ const EditarReporte: React.FC = () => {
       </div>
     );
   }
+
+  
 
   return (
     <>
