@@ -3,6 +3,7 @@ import { Button } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import CoralLogo from '../../assets/icons8-controlar-100.png';
 import { getCurrentUser } from "../../servicios/authServices";
+import { logout } from "../../servicios/authServices";
 
 
 const Sidebar: React.FC = () => {
@@ -159,15 +160,16 @@ const Sidebar: React.FC = () => {
                 </span>
               </div>
             </div>
-            <Link to="/Login">
-              <Button
-                className="d-flex align-items-center p-1"
-                variant="link"
-                style={{ color: "#f6952c" }}
-              >
-                <i className="bi bi-box-arrow-right"></i>
-              </Button>
-            </Link>
+
+            <Button
+              className="d-flex align-items-center p-1"
+              variant="link"
+              style={{ color: "#f6952c" }}
+              onClick={logout}
+            >
+              <i className="bi bi-box-arrow-right"></i>
+            </Button>
+
           </div>
         </div>
       </div>
