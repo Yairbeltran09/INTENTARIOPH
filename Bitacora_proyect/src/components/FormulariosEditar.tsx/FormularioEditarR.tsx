@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReporteById, updateReporte } from '../../servicios/reportesService';
-import { Card, Row, Col, Form, Button, Spinner } from 'react-bootstrap';
+import { Card, Row, Col, Form, Button, Spinner, Modal } from 'react-bootstrap';
 import Swal from 'sweetalert2';
+import FormularioEnvioM from '../FormulariosCrear/FormularioEnvioM';
 
 interface ICiudad {
   nombre_ciudad: string;
@@ -79,7 +80,12 @@ const EditarReporte: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isHovered2, setIsHovered2] = useState(false);
-  
+  const [showModal, setShowModal] = useState(false);
+
+
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
+
 
   useEffect(() => {
 
@@ -182,10 +188,38 @@ const EditarReporte: React.FC = () => {
     );
   }
 
-  
+
 
   return (
     <>
+      <div className="d-flex align-items-center" style={{ color: 'black' }}>
+        <div className="pagetitle">
+          <h1>Reportes</h1>
+          <nav>
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">Inicio</li>
+              <li className="breadcrumb-item active">Farmacias</li>
+            </ol>
+          </nav>
+        </div>
+        <div className="ms-auto">
+          <Button
+            onClick={handleShow}
+            className="btn" style={{ backgroundColor: '#f6952c', borderColor: '#f6952c', textAlign: 'center' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-router"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 13m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z" /><path d="M17 17l0 .01" /><path d="M13 17l0 .01" /><path d="M15 13l0 -2" /><path d="M11.75 8.75a4 4 0 0 1 6.5 0" /><path d="M8.5 6.5a8 8 0 0 1 13 0" /></svg>
+          </Button>
+        </div>
+      </div>
+      <Modal show={showModal} onHide={handleClose} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Enviar Modem</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormularioEnvioM />
+        </Modal.Body>
+        <Modal.Footer>
+        </Modal.Footer>
+      </Modal>
       <Card className="shadow-sm">
         <Card.Body>
           <h5 className="card-title mb-4">Reporte #{id}</h5>
@@ -356,9 +390,7 @@ const EditarReporte: React.FC = () => {
                 onMouseLeave={() => setIsHovered(false)}
                 type="button"
                 onClick={() => navigate('/Reportes')}
-
               >
-
                 <i className="bi bi-x-circle me-2"></i>
                 Cancelar
               </Button>
@@ -366,6 +398,8 @@ const EditarReporte: React.FC = () => {
           </Row>
         </Card.Body>
       </Card>
+
+
     </>
   );
 };

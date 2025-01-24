@@ -16,13 +16,16 @@ interface IModem {
   modelo: string;
   numero_serie: string;
   estado: string;
+  proveedorInternet: {
+    id: number;
+    nombre: string;
+  };
 }
 
 interface IEnvio {
   farmacia: any;
   modem: any;
   fecha_envio: string;
-  proveedorEnvio: any;
   costo_envio: number;
   estado_envio: string;
 }
@@ -31,14 +34,12 @@ const CrearEnvio: React.FC = () => {
   const navigate = useNavigate();
   const [farmacias, setFarmacias] = useState<IFarmacia[]>([]);
   const [modems, setModems] = useState<IModem[]>([]);
-  const [isHovered, setIsHovered] = useState(false);
   const [isHovered2, setIsHovered2] = useState(false);
 
   const [envio, setEnvio] = useState<IEnvio>({
     farmacia: null,
     modem: null,
     fecha_envio: new Date().toISOString(),
-    proveedorEnvio: null,
     costo_envio: 0,
     estado_envio: 'PENDIENTE'
   });
@@ -122,8 +123,8 @@ const CrearEnvio: React.FC = () => {
   };
 
   return (
-    <div className="p-3 border" style={{ color: 'black', backgroundColor: 'white', borderRadius: '0.6rem' }}>
-      <h5 className="card-title">Nuevo Envío de Módem</h5>
+    <div className="p-3 " style={{ color: 'black', backgroundColor: 'white', borderRadius: '0.6rem' }}>
+
       <br />
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
@@ -156,7 +157,7 @@ const CrearEnvio: React.FC = () => {
             <option value="">Seleccione un módem</option>
             {modems.map(modem => (
               <option key={modem.id} value={modem.id}>
-                {modem.marca} - {modem.modelo} (Serie: {modem.numero_serie})
+                {modem.marca} - {modem.modelo} (Serie: {modem.numero_serie}) - {modem.proveedorInternet.nombre}
               </option>
             ))}
           </select>
@@ -187,24 +188,15 @@ const CrearEnvio: React.FC = () => {
             onMouseEnter={() => setIsHovered2(true)}
             onMouseLeave={() => setIsHovered2(false)}
             type="submit"
-            className="btn btn-secondary m-2"
+            className="btn btn-secondary m-2 p-2"
           >
-            <i className="bi bi-floppy m-1" />GUARDAR
-          </button>
-          <button
-            style={{
-              backgroundColor: isHovered ? '#f6952c' : '#ffff',
-              color: isHovered ? '#fff' : '#f6952c',
-              borderColor: '#f6952c',
-              cursor: 'pointer'
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            type="button"
-            className="btn btn-outline-secondary"
-            onClick={() => navigate('/Envios')}
-          >
-            <i className="bi bi-x-circle m-1" />CANCELAR
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" stroke-width="2">
+              <path d="M11 17h6l-4 -5l4 -5h-6l-4 5z"></path>
+            </svg>
+            ENVIAR
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" stroke-width="2">
+              <path d="M13 7h-6l4 5l-4 5h6l4 -5z"></path>
+            </svg>
           </button>
         </div>
       </form>
