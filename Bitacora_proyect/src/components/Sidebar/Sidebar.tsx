@@ -17,6 +17,7 @@ const Sidebar: React.FC = () => {
     }
   }, []);
 
+  
 
   const getRoleName = (roleId: number) => {
     const roles: Record<number, string> = {
@@ -160,15 +161,18 @@ const Sidebar: React.FC = () => {
                 </span>
               </div>
             </div>
-
+          <Link to="/login" >
             <Button
               className="d-flex align-items-center p-1"
               variant="link"
               style={{ color: "#f6952c" }}
               onClick={logout}
+
             >
               <i className="bi bi-box-arrow-right"></i>
             </Button>
+
+          </Link> 
 
           </div>
         </div>
