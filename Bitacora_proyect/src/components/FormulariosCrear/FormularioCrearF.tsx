@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { getCiudades, getProveedores, getCanalesTransmision, createFarmacia } from '../../servicios/api';
+import handleClose from '../Tablas/TablaFarmcia';
 
 interface Ciudad {
   id: number;
@@ -139,7 +140,7 @@ function FormularioCrearF() {
   };
 
   return (
-    <div className="card card-body shadow-sm">
+    <div className="p-4">
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
           <label htmlFor="nombre" className="form-label">Nombre*</label>
@@ -243,6 +244,7 @@ function FormularioCrearF() {
               color: isHovered2 ? '#f6952c' : '#ffff',
 
             }}
+            onClick={handleClose}
             onMouseEnter={() => setIsHovered2(true)}
             onMouseLeave={() => setIsHovered2(false)}
             type="submit" className="btn btn-secondary me-4">

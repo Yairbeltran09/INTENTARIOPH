@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, FormControl, Card } from 'react-bootstrap';
+import { Badge, FormControl, Card, Modal, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { getFarmacias, deleteFarmacia } from '../../servicios/farmaciaService';
 
 import { Link } from 'react-router-dom';
+import FormularioCrearF from '../FormulariosCrear/FormularioCrearF';
 
 const FarmaciaTabla: React.FC = () => {
   const [farmacias, setFarmacias] = useState<any[]>([]);
@@ -11,6 +12,10 @@ const FarmaciaTabla: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [showModal, setShowModal] = useState(false);
+
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
 
   const [filterNombre, setFilterNombre] = useState('');
   const [filterDireccion, setFilterDireccion] = useState('');
@@ -104,6 +109,39 @@ const FarmaciaTabla: React.FC = () => {
 
   return (
     <>
+      <Modal show={showModal} onHide={handleClose} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Nueva Farmacia</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormularioCrearF />
+        </Modal.Body>
+
+      </Modal>
+
+      <div className="d-flex align-items-center" style={{ color: 'black' }}>
+        <div className="pagetitle">
+          <h1>Farmacias</h1>
+          <nav>
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">Inicio</li>
+
+              <li className="breadcrumb-item active">
+                <a className="text-decoration-none" href="/Proveedores">Proveedores</a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+        <div className="ms-auto">
+
+          <Button
+            onClick={handleShow}
+            className="btn" style={{ backgroundColor: '#f6952c', borderColor: '#f6952c' }}>
+            <i className="bi bi-plus-circle-fill me-2"></i> Agregar Farmacia
+          </Button>
+
+        </div>
+      </div>
       <div className='p-2' style={{ backgroundColor: '#ffff', borderBlockEndColor: '10px' }}>
         <div className="table-responsive hv-100" style={{ maxHeight: '50vh' }}>
           <table className="table table-hover text-nowrap" >
