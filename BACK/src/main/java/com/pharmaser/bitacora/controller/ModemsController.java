@@ -1,14 +1,13 @@
 package com.pharmaser.bitacora.controller;
 
-
-
-
 import com.pharmaser.bitacora.model.Modems;
 import com.pharmaser.bitacora.service.ModemsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/modems")
@@ -23,43 +22,50 @@ public class ModemsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Modems> getModemsById(@PathVariable Long id) {
-        Modems modems = modemsService.findById(id);
-        if (modems != null) {
-            return ResponseEntity.ok(modems);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Modems> getModemById(@PathVariable Long id) {
+        Modems modem = modemsService.findById(id);
+        if (modem != null) {
+            return ResponseEntity.ok(modem);
         }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("")
-    public Modems createModems(@RequestBody Modems modems) {
-        return modemsService.save(modems);
+    public Modems createModem(@RequestBody Modems modem) {
+        return modemsService.save(modem);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Modems> updatedModems(@PathVariable Long id, @RequestBody Modems modemsDetails) {
-        Modems updatedModems = modemsService.findById(id);
-        if (updatedModems != null) {
-            updatedModems.setEstado(modemsDetails.getEstado());
-            updatedModems.setFarmacia(modemsDetails.getFarmacia());
-            updatedModems.setEstado(modemsDetails.getEstado());
-            updatedModems.setNumero(modemsDetails.getNumero());
-            updatedModems.setProveedorInternet(modemsDetails.getProveedorInternet());
-            return ResponseEntity.ok(modemsService.save(updatedModems));
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Modems> updateModem(@PathVariable Long id, @RequestBody Modems modemDetails) {
+        Modems modem = modemsService.findById(id);
+        if (modem != null) {
+            modem.setMarca(modemDetails.getMarca());
+            modem.setModelo(modemDetails.getModelo());
+            modem.setNumero_serie(modemDetails.getNumero_serie());
+            modem.setEstado(modemDetails.getEstado());
+            modem.setProveedorInternet(modemDetails.getProveedorInternet());
+            return ResponseEntity.ok(modemsService.save(modem));
         }
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/softDelete/{id}")
     public ResponseEntity<Void> softDeleteModem(@PathVariable Long id) {
-        Modems modems = modemsService.findById(id);
-        if (modems != null) {
+        Modems modem = modemsService.findById(id);
+        if (modem != null) {
             modemsService.softDelete(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().build();
         }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<Modems> updateModemStatus(@PathVariable Long id, @RequestBody Map<String, String> estado) {
+        Modems modem = modemsService.findById(id);
+        if (modem != null) {
+            modem.setEstado(estado.get("estado"));
+            return ResponseEntity.ok(modemsService.save(modem));
+        }
+        return ResponseEntity.notFound().build();
     }
 }

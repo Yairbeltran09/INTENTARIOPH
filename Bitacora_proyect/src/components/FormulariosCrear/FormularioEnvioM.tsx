@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { createEnvio } from "../../servicios/EnvioModemService";
-import { getFarmacias } from "../../servicios/farmaciaService";
-import { getModems } from "../../servicios/modemService";
+import { getModems, updateModemStatus } from "../../servicios/modemService";
 import Swal from "sweetalert2";
-
-interface IFarmacia {
-  id: number;
-  nombre: string;
-}
 
 interface IModem {
   id: number;
@@ -30,14 +23,17 @@ interface IEnvio {
   estado_envio: string;
 }
 
-const CrearEnvio: React.FC = () => {
-  const navigate = useNavigate();
-  const [farmacias, setFarmacias] = useState<IFarmacia[]>([]);
+interface Props {
+  farmacia: any;
+  onClose?: () => void;
+}
+
+const FormularioEnvioM: React.FC<Props> = ({ farmacia, onClose }) => {
   const [modems, setModems] = useState<IModem[]>([]);
   const [isHovered2, setIsHovered2] = useState(false);
 
   const [envio, setEnvio] = useState<IEnvio>({
-    farmacia: null,
+    farmacia: farmacia,
     modem: null,
     fecha_envio: new Date().toISOString(),
     costo_envio: 0,
@@ -47,11 +43,7 @@ const CrearEnvio: React.FC = () => {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [farmaciasData, modemsData] = await Promise.all([
-          getFarmacias(),
-          getModems(),
-        ]);
-        setFarmacias(farmaciasData);
+        const modemsData = await getModems();
         setModems(modemsData.filter((modem) => modem.estado === "DISPONIBLE"));
       } catch (error) {
         console.error("Error al cargar datos:", error);
@@ -71,15 +63,7 @@ const CrearEnvio: React.FC = () => {
   ) => {
     const { name, value } = e.target;
 
-    if (name === "farmacia") {
-      const farmaciaSeleccionada = farmacias.find(
-        (f) => f.id === parseInt(value)
-      );
-      setEnvio((prev) => ({
-        ...prev,
-        farmacia: farmaciaSeleccionada,
-      }));
-    } else if (name === "modem") {
+    if (name === "modem") {
       const modemSeleccionado = modems.find((m) => m.id === parseInt(value));
       setEnvio((prev) => ({
         ...prev,
@@ -106,15 +90,23 @@ const CrearEnvio: React.FC = () => {
         },
       });
 
-      await createEnvio(envio);
+      // Crear el envío
+      const envioCreado = await createEnvio(envio);
+
+      // Actualizar el estado del módem a "EN USO"
+      if (envio.modem?.id) {
+        await updateModemStatus(envio.modem.id, "EN USO");
+      }
 
       Swal.fire({
         icon: "success",
         title: "¡Éxito!",
-        text: "Envío creado correctamente",
+        text: "Envío creado correctamente y módem actualizado",
       });
 
-      navigate("/Envios");
+      if (onClose) {
+        onClose();
+      }
     } catch (error) {
       console.error("Error al crear el envío:", error);
       Swal.fire({
@@ -127,7 +119,7 @@ const CrearEnvio: React.FC = () => {
 
   return (
     <div
-      className="p-3 "
+      className="p-3"
       style={{
         color: "black",
         backgroundColor: "white",
@@ -136,27 +128,7 @@ const CrearEnvio: React.FC = () => {
     >
       <br />
       <form className="row g-3" onSubmit={handleSubmit}>
-        <div className="col-md-6">
-          <label htmlFor="farmacia" className="form-label">
-            Farmacia*
-          </label>
-          <select
-            className="form-select"
-            name="farmacia"
-            value={envio.farmacia?.id || ""}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="">Seleccione una farmacia</option>
-            {farmacias.map((farmacia) => (
-              <option key={farmacia.id} value={farmacia.id}>
-                {farmacia.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="col-md-6">
+        <div className="col-md-12">
           <label htmlFor="modem" className="form-label">
             Módem Disponible*
           </label>
@@ -177,22 +149,22 @@ const CrearEnvio: React.FC = () => {
           </select>
         </div>
         
-        <div className="col-6">
-    <label className="form-label" >Costo de Envío*</label>
-    <div className="input-group">
-      <div className="input-group-text">$</div>
-      <input
-            type="number"
-            className="form-control"
-            name="costo_envio"
-            value={envio.costo_envio}
-            onChange={handleInputChange}
-            required
-            min="0"
-            step="0.01"
-          />
-    </div>
-  </div>
+        <div className="col-12">
+          <label className="form-label">Costo de Envío*</label>
+          <div className="input-group">
+            <div className="input-group-text">$</div>
+            <input
+              type="number"
+              className="form-control"
+              name="costo_envio"
+              value={envio.costo_envio}
+              onChange={handleInputChange}
+              required
+              min="0"
+              step="0.01"
+            />
+          </div>
+        </div>
 
         <div className="text-center">
           <button
@@ -213,11 +185,11 @@ const CrearEnvio: React.FC = () => {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               width="24"
               height="24"
-              stroke-width="2"
+              strokeWidth="2"
             >
               <path d="M11 17h6l-4 -5l4 -5h-6l-4 5z"></path>
             </svg>
@@ -227,11 +199,11 @@ const CrearEnvio: React.FC = () => {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               width="24"
               height="24"
-              stroke-width="2"
+              strokeWidth="2"
             >
               <path d="M13 7h-6l4 5l-4 5h6l4 -5z"></path>
             </svg>
@@ -242,4 +214,4 @@ const CrearEnvio: React.FC = () => {
   );
 };
 
-export default CrearEnvio;
+export default FormularioEnvioM;

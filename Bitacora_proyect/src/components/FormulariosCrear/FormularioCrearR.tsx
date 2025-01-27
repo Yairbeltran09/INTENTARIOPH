@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createReporte } from '../../servicios/reportesService';
-import { getFarmacias } from '../../servicios/farmaciaService';
-import { getMotivos } from '../../servicios/motivoreporteService';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { createReporte } from "../../servicios/reportesService";
+import { getFarmacias } from "../../servicios/farmaciaService";
+import { getMotivos } from "../../servicios/motivoreporteService";
+import Swal from "sweetalert2";
 
 interface IFarmacia {
   id: number;
@@ -35,24 +35,25 @@ const CrearReporte: React.FC = () => {
   const navigate = useNavigate();
   const [farmacias, setFarmacias] = useState<IFarmacia[]>([]);
   const [motivos, setMotivos] = useState<IMotivo[]>([]);
+  const [filterFarmacia, setFilterFarmacia] = useState("");
+  const [filterMotivo, setFilterMotivo] = useState("");
+  const [showFarmacias, setShowFarmacias] = useState(false);
+  const [showMotivos, setShowMotivos] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isHovered2, setIsHovered2] = useState(false);
 
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    return now.toISOString().slice(0, 16);
-  };
+  const getCurrentDateTime = () => new Date().toISOString().slice(0, 16);
 
   const [reporte, setReporte] = useState<IReporte>({
-    fecha: new Date().toISOString().split('T')[0],
+    fecha: new Date().toISOString().split("T")[0],
     farmacia: null,
     fecha_hora_inicio: getCurrentDateTime(),
-    duracion_incidente: '',
-    proveedor: '',
+    duracion_incidente: "",
+    proveedor: "",
     motivo: null,
-    estado: 'ABIERTO',
-    observacion: '',
-    isDeleted: false
+    estado: "ABIERTO",
+    observacion: "",
+    isDeleted: false,
   });
 
   useEffect(() => {
@@ -60,77 +61,70 @@ const CrearReporte: React.FC = () => {
       try {
         const [farmaciasData, motivosData] = await Promise.all([
           getFarmacias(),
-          getMotivos()
+          getMotivos(),
         ]);
         setFarmacias(farmaciasData);
         setMotivos(motivosData);
       } catch (error) {
-        console.error('Error al cargar datos:', error);
+        console.error("Error al cargar datos:", error);
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error al cargar los datos necesarios'
+          icon: "error",
+          title: "Error",
+          text: "Error al cargar los datos necesarios",
         });
       }
     };
-
     cargarDatos();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
 
-    if (name === 'farmacia') {
-      const farmaciaSeleccionada = farmacias.find(f => f.id === parseInt(value));
-      setReporte(prev => ({
+    if (name === "farmacia") {
+      const farmaciaSeleccionada = farmacias.find(
+        (f) => f.id === parseInt(value)
+      );
+      setReporte((prev) => ({
         ...prev,
         farmacia: farmaciaSeleccionada,
-        proveedor: farmaciaSeleccionada?.proveedor?.nombre || ''
+        proveedor: farmaciaSeleccionada?.proveedor?.nombre || "",
       }));
-    } else if (name === 'motivo') {
-      const motivoSeleccionado = motivos.find(m => m.id === parseInt(value));
-      setReporte(prev => ({
+    } else if (name === "motivo") {
+      const motivoSeleccionado = motivos.find((m) => m.id === parseInt(value));
+      setReporte((prev) => ({
         ...prev,
-        motivo: motivoSeleccionado
+        motivo: motivoSeleccionado,
       }));
     } else {
-      setReporte(prev => ({
+      setReporte((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const filteredFarmacias = farmacias.filter((farmacia) =>
+    farmacia.nombre.toLowerCase().includes(filterFarmacia.toLowerCase())
+  );
 
-    try {
-      Swal.fire({
-        title: 'Creando reporte...',
-        text: 'Por favor espere',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
+  const filteredMotivos = motivos.filter((motivo) =>
+    motivo.motivo.toLowerCase().includes(filterMotivo.toLowerCase())
+  );
 
-      await createReporte(reporte);
+  const handleSelectFarmacia = (farmaciaId, farmaciaNombre) => {
+    handleInputChange({ target: { name: "farmacia", value: farmaciaId } });
+    setFilterFarmacia(farmaciaNombre);
+    setShowFarmacias(false);
+  };
 
-      Swal.fire({
-        icon: 'success',
-        title: '¡Éxito!',
-        text: 'Reporte creado correctamente'
-      });
-
-      navigate('/Reportes');
-    } catch (error) {
-      console.error('Error al crear el reporte:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo crear el reporte'
-      });
-    }
+  const handleSelectMotivo = (motivoId, motivoNombre) => {
+    handleInputChange({ target: { name: "motivo", value: motivoId } });
+    setFilterMotivo(motivoNombre);
+    setShowMotivos(false);
   };
 
   const handleReset = () => {
@@ -148,26 +142,60 @@ const CrearReporte: React.FC = () => {
   };
 
   return (
-    <div className="p-3 border" style={{ color: 'black', backgroundColor: 'white', borderRadius: '0.6rem' }}>
+    <div
+      className="p-3 border"
+      style={{
+        color: "black",
+        backgroundColor: "white",
+        borderRadius: "0.6rem",
+      }}
+    >
       <h5 className="card-title">Nuevo Reporte</h5>
       <br />
-      <form className="row g-3" onSubmit={handleSubmit}>
+      <form className="row g-3">
+        {/* Farmacia Selector */}
         <div className="col-md-6">
-          <label htmlFor="farmacia" className="form-label">Farmacia*</label>
-          <select
-            className="form-select"
-            name="farmacia"
-            value={reporte.farmacia?.id || ''}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="">Seleccione una farmacia</option>
-            {farmacias.map(farmacia => (
-              <option key={farmacia.id} value={farmacia.id}>
-                {farmacia.nombre}
-              </option>
-            ))}
-          </select>
+          <label htmlFor="farmacia" className="form-label">
+            Farmacia*
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Seleccione una farmacia..."
+            value={filterFarmacia}
+            onChange={(e) => setFilterFarmacia(e.target.value)}
+            onFocus={() => setShowFarmacias(true)}
+            onBlur={() => setTimeout(() => setShowFarmacias(false), 200)}
+          />
+          {showFarmacias && (
+            <ul
+              className="list-group mt-1 position-absolute"
+              style={{
+                zIndex: 10,
+                maxHeight: "300px",
+                overflowY: "auto",
+                width: "auto",
+              }}
+            >
+              {filteredFarmacias.map((farmacia) => (
+                <li
+                  key={farmacia.id}
+                  className="list-group-item list-group-item-action border-0"
+                  onClick={() =>
+                    handleSelectFarmacia(farmacia.id, farmacia.nombre)
+                  }
+                  style={{ cursor: "pointer" }}
+                >
+                  {farmacia.nombre}
+                </li>
+              ))}
+              {filteredFarmacias.length === 0 && (
+                <li className="list-group-item text-muted">
+                  No se encontraron farmacias
+                </li>
+              )}
+            </ul>
+          )}
         </div>
 
         <div className="col-md-6">
@@ -181,26 +209,54 @@ const CrearReporte: React.FC = () => {
           />
         </div>
 
+        {/* Motivo Selector */}
         <div className="col-md-6">
-          <label htmlFor="motivo" className="form-label">Motivo*</label>
-          <select
-            className="form-select"
-            name="motivo"
-            value={reporte.motivo?.id || ''}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="">Seleccione un motivo</option>
-            {motivos.map(motivo => (
-              <option key={motivo.id} value={motivo.id}>
-                {motivo.motivo}
-              </option>
-            ))}
-          </select>
+          <label htmlFor="motivo" className="form-label">
+            Motivo*
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Seleccione un motivo..."
+            value={filterMotivo}
+            onChange={(e) => setFilterMotivo(e.target.value)}
+            onFocus={() => setShowMotivos(true)}
+            onBlur={() => setTimeout(() => setShowMotivos(false), 200)}
+          />
+          {showMotivos && (
+            <ul
+              className="list-group mt-1 position-absolute"
+              style={{
+                zIndex: 10,
+                maxHeight: "auto",
+                overflowY: "auto",
+                width: "auto",
+              }}
+            >
+              {filteredMotivos.map((motivo) => (
+                <li
+                  key={motivo.id}
+                  className="list-group-item list-group-item-action border-0"
+                  onClick={() => handleSelectMotivo(motivo.id, motivo.motivo)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {motivo.motivo}
+                </li>
+              ))}
+              {filteredMotivos.length === 0 && (
+                <li className="list-group-item text-muted">
+                  No se encontraron motivos
+                </li>
+              )}
+            </ul>
+          )}
         </div>
 
+        {/* Observación */}
         <div className="col-12">
-          <label htmlFor="observacion" className="form-label">Observación</label>
+          <label htmlFor="observacion" className="form-label">
+            Observación
+          </label>
           <textarea
             className="form-control"
             id="observacion"
