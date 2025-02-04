@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Badge, FormControl, Card, Modal, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { getFarmacias, deleteFarmacia } from '../../servicios/farmaciaService';
-
-import { Link } from 'react-router-dom';
 import FormularioCrearF from '../FormulariosCrear/FormularioCrearF';
+import FormularioEditarF from '../FormulariosEditar.tsx/FormularioEditarF';
 
 const FarmaciaTabla: React.FC = () => {
   const [farmacias, setFarmacias] = useState<any[]>([]);
@@ -13,9 +12,14 @@ const FarmaciaTabla: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [showModal, setShowModal] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
+  const [selectedFarmaciaId, setSelectedFarmaciaId] = useState<number | null>(null);
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
+
+  const handleShow2 = () => setShowModal2(true);
+  const handleClose2 = () => setShowModal2(false);
 
   const [filterNombre, setFilterNombre] = useState('');
   const [filterDireccion, setFilterDireccion] = useState('');
@@ -116,7 +120,6 @@ const FarmaciaTabla: React.FC = () => {
         <Modal.Body>
           <FormularioCrearF />
         </Modal.Body>
-
       </Modal>
 
       <div className="d-flex align-items-center" style={{ color: 'black' }}>
@@ -244,10 +247,16 @@ const FarmaciaTabla: React.FC = () => {
                   </td>
                   <td>
                     <div className="d-flex justify-content-end btn-group" role="group">
-
-                      <Link to={`/EditarFarmacia/${farmacia.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
+                      <button
+                        className="btn btn-light btn-sm"
+                        style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                        onClick={() => {
+                          setSelectedFarmaciaId(farmacia.id); // Guardamos el ID de la farmacia
+                          handleShow2(); // Abrimos el modal
+                        }}
+                      >
                         <i className="bi bi-pencil"></i>
-                      </Link>
+                      </button>
                       <button
                         className="btn btn-sm"
                         style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
@@ -263,6 +272,32 @@ const FarmaciaTabla: React.FC = () => {
           </table>
         </div >
       </div >
+
+      <Modal show={showModal2} onHide={handleClose2} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Farmacia</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedFarmaciaId && (
+            <FormularioEditarF
+              farmaciaId={selectedFarmaciaId}
+              onClose={handleClose2}
+              onSuccess={() => {
+                // Recargamos la lista de farmacias después de una actualización exitosa
+                const loadFarmacia = async () => {
+                  try {
+                    const data = await getFarmacias();
+                    setFarmacias(data);
+                  } catch (error) {
+                    console.error('Error al recargar farmacias:', error);
+                  }
+                };
+                loadFarmacia();
+              }}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
 
       <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', backgroundColor: '#ffff', borderBottom: '20px' }}>
         <ul className="pagination pagination-sm" >

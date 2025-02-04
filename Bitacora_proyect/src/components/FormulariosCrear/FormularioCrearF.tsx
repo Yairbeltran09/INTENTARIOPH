@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { getCiudades, getProveedores, getCanalesTransmision, createFarmacia } from '../../servicios/api';
-import handleClose from '../Tablas/TablaFarmcia';
+
 
 interface Ciudad {
   id: number;
@@ -22,7 +22,7 @@ interface CanalTransmision {
   nombre: string;
 }
 
-function FormularioCrearF() {
+function FormularioCrearF({ handleClose }: { handleClose: () => void }) {
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [canalesTransmision, setCanalesTransmision] = useState<CanalTransmision[]>([]);

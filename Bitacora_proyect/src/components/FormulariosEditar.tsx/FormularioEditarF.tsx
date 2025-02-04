@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { getFarmaciaById, updateFarmacia, getCiudades, getProveedores, getCanalesTransmision } from '../../servicios/api';
+
 
 interface Ciudad {
   id: number;
@@ -22,9 +22,13 @@ interface CanalTransmision {
   nombre: string;
 }
 
-function FormularioEditarF() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+interface FormularioEditarFProps {
+  farmaciaId: number;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+function FormularioEditarF({ farmaciaId, onClose, onSuccess }: FormularioEditarFProps) {
   const [loading, setLoading] = useState(true);
   const [ciudades, setCiudades] = useState<Ciudad[]>([]);
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
@@ -57,7 +61,7 @@ function FormularioEditarF() {
         });
 
         const [farmaciaData, ciudadesData, proveedoresData, canalesData] = await Promise.all([
-          getFarmaciaById(Number(id)),
+          getFarmaciaById(farmaciaId),
           getCiudades(),
           getProveedores(),
           getCanalesTransmision()
@@ -91,10 +95,8 @@ function FormularioEditarF() {
       }
     };
 
-    if (id) {
-      cargarDatos();
-    }
-  }, [id]);
+    cargarDatos();
+  }, [farmaciaId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -150,7 +152,7 @@ function FormularioEditarF() {
         }
       });
 
-      await updateFarmacia(Number(id), formData);
+      await updateFarmacia(farmaciaId, formData);
 
       Swal.fire({
         icon: 'success',
@@ -158,7 +160,8 @@ function FormularioEditarF() {
         text: 'Farmacia actualizada correctamente'
       });
 
-      navigate('/Farmacias');
+      onSuccess();
+      onClose();
     } catch (error) {
       console.error('Error al actualizar:', error);
       Swal.fire({
@@ -174,8 +177,8 @@ function FormularioEditarF() {
   }
 
   return (
-    <div className="card card-body shadow-sm">
-      <h5>ID:{id}</h5>
+    <div className="p-4">
+      <h5>ID: {farmaciaId}</h5>
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
           <label htmlFor="nombre" className="form-label">Nombre*</label>
@@ -291,16 +294,16 @@ function FormularioEditarF() {
         <div className="text-center">
           <button
             style={{
-              backgroundColor: '#f6952c', borderColor: '#f6952c',
+              backgroundColor: '#f6952c',
+              borderColor: '#f6952c',
               cursor: 'pointer',
               background: isHovered2 ? '#ffff' : '#f6952c',
-
               color: isHovered2 ? '#f6952c' : '#ffff',
-
             }}
             onMouseEnter={() => setIsHovered2(true)}
             onMouseLeave={() => setIsHovered2(false)}
-            type="submit" className="btn btn-secondary me-4">
+            type="submit"
+            className="btn btn-secondary me-4">
             <i className="bi bi-box-arrow-up m-1" />ACTUALIZAR
           </button>
           <button
@@ -314,7 +317,7 @@ function FormularioEditarF() {
             onMouseLeave={() => setIsHovered(false)}
             type="button"
             className="btn btn-outline-secondary"
-            onClick={() => navigate('/Farmacias')}
+            onClick={onClose}
           >
             <i className="bi bi-arrow-left m-1" />CANCELAR
           </button>
