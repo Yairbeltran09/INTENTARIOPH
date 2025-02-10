@@ -13,6 +13,8 @@ function FormularioCrear() {
     observacion: '',
     isDeleted: false,
   });
+  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered2, setIsHovered2] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -55,7 +57,7 @@ function FormularioCrear() {
           text: 'El proveedor se ha creado correctamente.',
         });
 
-        // Resetear formulario
+
         setFormData({
           nombre: '',
           nit: '',
@@ -86,7 +88,7 @@ function FormularioCrear() {
   };
 
   return (
-    <div className="card card-body shadow-sm">
+    <div className="p-4">
       <form className="row g-3" onSubmit={handleSubmit}>
         <div className="col-md-6">
           <label htmlFor="nombre" className="form-label">Nombre*</label>
@@ -167,10 +169,31 @@ function FormularioCrear() {
         </div>
 
         <div className="text-center">
-          <button type="submit" className="btn btn-secondary me-4">
+          <button
+            style={{
+              backgroundColor: '#f6952c', borderColor: '#f6952c',
+              cursor: 'pointer',
+              background: isHovered2 ? '#ffff' : '#f6952c',
+
+              color: isHovered2 ? '#f6952c' : '#ffff',
+
+            }}
+            onMouseEnter={() => setIsHovered2(true)}
+            onMouseLeave={() => setIsHovered2(false)}
+            type="submit" className="btn btn-secondary me-4">
             <i className="bi bi-floppy m-1" />GUARDAR
           </button>
           <button
+
+            style={{
+              backgroundColor: isHovered ? '#f6952c' : '#ffff',
+              color: isHovered ? '#fff' : '#f6952c',
+              borderColor: '#f6952c',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+
             type="reset"
             className="btn btn-outline-secondary"
             onClick={() => setFormData({

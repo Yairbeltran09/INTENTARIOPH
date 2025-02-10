@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, FormControl, Card } from 'react-bootstrap';
+import { Badge, FormControl, Card, Modal, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { getProveedor_internet, deleteProveedor } from '../../servicios/ProveedoresService';
 import { Link } from 'react-router-dom';
+import FormularioCrear from '../FormulariosCrear/FormularioCrear';
 
 const ProveedorTable: React.FC = () => {
   const [Proveedor_internet, setProveedor_internet] = useState<any[]>([]);
@@ -17,6 +18,11 @@ const ProveedorTable: React.FC = () => {
   const [filterNombreContacto, setFilterNombreContacto] = useState('');
   const [filterNumeroContacto, setFilterNumeroContacto] = useState('');
   const [filterEstado, setFilterEstado] = useState('');
+
+  const [showModal, setShowModal] = useState(false);
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
+
 
   useEffect(() => {
     const loadProveedor_internet = async () => {
@@ -101,6 +107,36 @@ const ProveedorTable: React.FC = () => {
 
   return (
     <>
+
+      <Modal show={showModal} onHide={handleClose} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Nueva Farmacia</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormularioCrear />
+        </Modal.Body>
+      </Modal>
+
+      <div className="d-flex align-items-center" style={{ color: 'black' }}>
+        <div className="pagetitle">
+          <h1>Proveedores</h1>
+          <nav>
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">Inicio</li>
+              <li className="breadcrumb-item active">Farmacias</li>
+            </ol>
+          </nav>
+        </div>
+        <div className="ms-auto">
+
+          <Button onClick={handleShow} className="btn" style={{ backgroundColor: '#f6952c', borderColor: '#f6952c' }}
+          >
+            <i className="bi bi-plus-circle-fill me-2"></i> Agregar Proveedor
+          </Button>
+
+        </div>
+      </div>
+
       <div className='p-2' style={{ backgroundColor: '#ffff', borderBlockEndColor: '10px' }}>
         <div className="table-responsive hv-100" style={{ maxHeight: '50vh' }}>
           <table className='table table-hover text-nowarp'>

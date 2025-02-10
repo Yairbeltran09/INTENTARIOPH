@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/farmacia'; 
+const API_URL = 'http://localhost:8080/api/farmacia';
 
 // TRAER LOS FARMACIAS
 export const getFarmacias = async () => {
@@ -20,7 +20,7 @@ export const deleteFarmacia = async (id: number) => {
     const response = await axios.put(`${API_URL}/softDelete/${id}`);
     return response.data;
   } catch (error) {
-    console.error('Error al eliminar la farmacia:', error);
+    console.error('Error al eliminar farmacia:', error);
     throw error;
   }
 };
@@ -46,6 +46,6 @@ export const updateFarmacia = async (id: number, farmaciaData: any) => {
     return response.data;
   } catch (error) {
     console.error('Error al actualizar Farmacia:', error);
-    throw error; 
+    throw error;
   }
 }

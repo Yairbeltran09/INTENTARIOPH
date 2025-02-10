@@ -110,8 +110,6 @@ public class Farmacias {
         this.coordenadas = coordenadas;
     }
 
-
-
     public String getAnchoBAnda() {
         return anchoBAnda;
     }
@@ -128,13 +126,12 @@ public class Farmacias {
         this.proveedorInternet = proveedorInternet;
     }
 
-
     public Boolean getIsDeleted() {
         return isDeleted;
     }
 
-    public void setISDeleted(Boolean deleted) {
-        isDeleted = isDeleted;
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
 }

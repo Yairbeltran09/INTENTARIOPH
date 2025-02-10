@@ -83,14 +83,14 @@ const FarmaciaTabla: React.FC = () => {
       if (result.isConfirmed) {
         await deleteFarmacia(id);
         setFarmacias((prev) => prev.filter((farmacia) => farmacia.id !== id));
-        Swal.fire('¡Eliminado!', 'La farmacia ha sido eliminada.', 'success');
+        Swal.fire('¡Eliminado!', 'El proveedor ha sido eliminado.', 'success');
       }
     } catch (error) {
       console.error('Error al eliminar:', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo eliminar la farmacia. Por favor, intente nuevamente.',
+        text: 'No se pudo eliminar el proveedor. Por favor, intente nuevamente.',
       });
     }
   };
@@ -283,7 +283,6 @@ const FarmaciaTabla: React.FC = () => {
               farmaciaId={selectedFarmaciaId}
               onClose={handleClose2}
               onSuccess={() => {
-                // Recargamos la lista de farmacias después de una actualización exitosa
                 const loadFarmacia = async () => {
                   try {
                     const data = await getFarmacias();

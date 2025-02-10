@@ -3,7 +3,8 @@ package com.pharmaser.bitacora.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.security.Timestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 public class EnvioDeModems {
@@ -16,31 +17,32 @@ public class EnvioDeModems {
     private Farmacias farmacia;
 
     @ManyToOne
-    @JoinColumn(name = "id_modem")
-    private Modems modem;
+    @JoinColumn(name = "id_modem_principal")
+    private Modems modemPrincipal;
 
-    private Timestamp fecha_envio;
+    @ManyToOne
+    @JoinColumn(name = "id_modem_secundario")
+    private Modems modemSecundario;
 
-
-
+    private LocalDateTime fecha_envio;
     private BigDecimal costo_envio;
     private String estado_envio;
 
-
-    public BigDecimal getCosto_envio() {
-        return costo_envio;
+    // Getters y setters
+    public Modems getModemPrincipal() {
+        return modemPrincipal;
     }
 
-    public void setCosto_envio(BigDecimal costo_envio) {
-        this.costo_envio = costo_envio;
-    }
-    
-    public Modems getModem() {
-        return modem;
+    public void setModemPrincipal(Modems modemPrincipal) {
+        this.modemPrincipal = modemPrincipal;
     }
 
-    public void setModem(Modems modem) {
-        this.modem = modem;
+    public Modems getModemSecundario() {
+        return modemSecundario;
+    }
+
+    public void setModemSecundario(Modems modemSecundario) {
+        this.modemSecundario = modemSecundario;
     }
 
     public long getId() {
@@ -51,20 +53,20 @@ public class EnvioDeModems {
         this.id = id;
     }
 
-    public Timestamp getFecha_envio() {
+    public LocalDateTime getFecha_envio() {
         return fecha_envio;
     }
 
-    public void setFecha_envio(Timestamp fecha_envio) {
+    public void setFecha_envio(LocalDateTime fecha_envio) {
         this.fecha_envio = fecha_envio;
     }
 
-    public Farmacias getFarmacia() {
-        return farmacia;
+    public BigDecimal getCosto_envio() {
+        return costo_envio;
     }
 
-    public void setFarmacia(Farmacias farmacia) {
-        this.farmacia = farmacia;
+    public void setCosto_envio(BigDecimal costo_envio) {
+        this.costo_envio = costo_envio;
     }
 
     public String getEstado_envio() {
@@ -73,5 +75,13 @@ public class EnvioDeModems {
 
     public void setEstado_envio(String estado_envio) {
         this.estado_envio = estado_envio;
+    }
+
+    public Farmacias getFarmacia() {
+        return farmacia;
+    }
+
+    public void setFarmacia(Farmacias farmacia) {
+        this.farmacia = farmacia;
     }
 }

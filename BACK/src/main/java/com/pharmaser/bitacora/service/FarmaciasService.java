@@ -32,7 +32,7 @@ public class FarmaciasService {
     public void softDelete(Long id) {
         Farmacias farmacias = farmaciasRepo.findById(id).orElse(null);
         if (farmacias != null) {
-            farmacias.setISDeleted(true);
+            farmacias.setIsDeleted(true);
             farmaciasRepo.save(farmacias);
         }
     }
