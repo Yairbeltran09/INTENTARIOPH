@@ -3,9 +3,7 @@ import Login from "../components/Login/Login";
 import { Reportes } from "../Paginas/Reportes";
 import { Proveedores } from "../Paginas/Proveedores";
 import { Farmacias } from "../Paginas/Farmacias";
-import { CrearProveedor } from "../Paginas/CrearProveedor";
 import { EditarProveedor } from "../Paginas/EditarProveedor";
-import { CrearFarmacia } from "../Paginas/CrearFarmacia";
 import { EditarFarmacia } from "../Paginas/EditarFarmacias";
 import { CrearReporte } from "../Paginas/CrearReportes";
 import { EditarReporte } from "../Paginas/EditarReporte";
@@ -60,27 +58,12 @@ export const AppRutas = () => {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/crearProveedor"
-        element={
-          <ProtectedRoute allowedRoles={[1]}>
-            <CrearProveedor />
-          </ProtectedRoute>
-        }
-      />
+      
       <Route
         path="/editarProveedor/:id"
         element={
           <ProtectedRoute allowedRoles={[1]}>
             <EditarProveedor />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/crearFarmacia"
-        element={
-          <ProtectedRoute allowedRoles={[1]}>
-            <CrearFarmacia />
           </ProtectedRoute>
         }
       />

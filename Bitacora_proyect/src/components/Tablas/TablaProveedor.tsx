@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { getProveedor_internet, deleteProveedor } from '../../servicios/ProveedoresService';
 import { Link } from 'react-router-dom';
 import FormularioCrear from '../FormulariosCrear/FormularioCrear';
+import FormularioEditarP from '../FormulariosEditar.tsx/FormularioEditarP';
 
 const ProveedorTable: React.FC = () => {
   const [Proveedor_internet, setProveedor_internet] = useState<any[]>([]);
@@ -18,6 +19,10 @@ const ProveedorTable: React.FC = () => {
   const [filterNombreContacto, setFilterNombreContacto] = useState('');
   const [filterNumeroContacto, setFilterNumeroContacto] = useState('');
   const [filterEstado, setFilterEstado] = useState('');
+
+  const handleClose2 = () => setShowModal2(false);
+  const [showModal2, setShowModal2] = useState(false);
+  const [selectedProveedorId, setSelectedProveedorId] = useState<number | null>(null);
 
   const [showModal, setShowModal] = useState(false);
   const handleShow = () => setShowModal(true);
@@ -225,9 +230,16 @@ const ProveedorTable: React.FC = () => {
                   </td>
                   <td>
                     <div className="d-flex justify-content-end btn-group" role="group">
-                      <Link to={`/EditarProveedor/${proveedor.id}`} className="btn btn-light btn-sm" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}>
+                      <button
+                        className="btn btn-light btn-sm"
+                        style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                        onClick={() => {
+                          setSelectedProveedorId(proveedor.id);
+                          setShowModal2(true);
+                        }}
+                      >
                         <i className="bi bi-pencil"></i>
-                      </Link>
+                      </button>
                       <button
                         className="btn btn-sm"
                         style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
@@ -243,6 +255,49 @@ const ProveedorTable: React.FC = () => {
           </table>
         </div>
       </div>
+
+
+      <Modal show={showModal2} onHide={handleClose2} centered size="lg">
+        <Modal.Header closeButton style={{ backgroundColor: '#f8f9fa' }}>
+          <Modal.Title>
+            <i className="bi bi-pencil-square me-2"></i>
+            Editar Proveedor
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedProveedorId && (
+            <FormularioEditarP
+              proveedorId={selectedProveedorId}
+              onClose={handleClose2}
+              onSuccess={() => {
+                const loadProveedor = async () => {
+                  try {
+                    const data = await getProveedor_internet();
+                    setProveedor_internet(data);
+                    handleClose2();
+                    Swal.fire({
+                      icon: 'success',
+                      title: '¡Actualizado!',
+                      text: 'El proveedor ha sido actualizado exitosamente',
+                      timer: 1500
+                    });
+                  } catch (error) {
+                    console.error('Error al recargar proveedores:', error);
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'No se pudieron recargar los proveedores'
+                    });
+                  }
+                };
+                loadProveedor();
+              }}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
+
+
       <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', backgroundColor: '#ffff', borderBottom: '20px' }}>
         <ul className="pagination pagination-sm" >
           <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>

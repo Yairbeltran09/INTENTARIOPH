@@ -3,13 +3,26 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getProveedorInternetById, updateProveedorInternet } from '../../servicios/ProveedoresService';
 import Swal from 'sweetalert2';
 
+interface Proveedor {
+  id: string;
+  nombre: string;
+  nit: string;
+  nombre_contacto: string;
+  numero_contacto: string;
+  correo: string;
+  fecha_contratacion: string;
+  estado: string;
+  observacion: string;
+  isDeleted: boolean;
+}
+
 const EditarProveedor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const [isHovered2, setIsHovered2] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [proveedor, setProveedor] = useState({
+  const [proveedor, setProveedor] = useState<Proveedor>({
     id: '',
     nombre: '',
     nit: '',
@@ -23,26 +36,36 @@ const EditarProveedor: React.FC = () => {
   });
 
   useEffect(() => {
-    const cargarProveedor = async () => {
+    const cargarDatos = async () => {
       try {
-        if (id) {
-          setLoading(true);
-          Swal.fire({
-            title: 'Cargando...',
-            text: 'Por favor espere',
-            allowOutsideClick: false,
-            didOpen: () => {
-              Swal.showLoading();
-            }
-          });
+        if (!id) return;
 
-          const data = await getProveedorInternetById(Number(id));
-          console.log(data);
+        setLoading(true);
+        Swal.fire({
+          title: 'Cargando...',
+          text: 'Por favor espere',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
 
-          setProveedor(data);
-          setLoading(false);
-          Swal.close();
-        }
+        const proveedorData = await getProveedorInternetById(Number(id));
+        setProveedor({
+          id: proveedorData.id?.toString() || '',
+          nombre: proveedorData.nombre || '',
+          nit: proveedorData.nit?.toString() || '',
+          nombre_contacto: proveedorData.nombre_contacto || '',
+          numero_contacto: proveedorData.numero_contacto || '',
+          correo: proveedorData.correo || '',
+          fecha_contratacion: proveedorData.fecha_contratacion || '',
+          estado: proveedorData.estado || '',
+          observacion: proveedorData.observacion || '',
+          isDeleted: proveedorData.isDeleted || false
+        });
+
+        setLoading(false);
+        Swal.close();
       } catch (error) {
         setLoading(false);
         console.error('Error al cargar el proveedor:', error);
@@ -54,7 +77,7 @@ const EditarProveedor: React.FC = () => {
       }
     };
 
-    cargarProveedor();
+    cargarDatos();
   }, [id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -68,6 +91,8 @@ const EditarProveedor: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!id) return;
+
     try {
       Swal.fire({
         title: 'Actualizando...',
@@ -78,7 +103,14 @@ const EditarProveedor: React.FC = () => {
         }
       });
 
-      await updateProveedorInternet(Number(id), proveedor);
+
+      const proveedorToUpdate = {
+        ...proveedor,
+        id: Number(proveedor.id),
+        nit: Number(proveedor.nit)
+      };
+
+      await updateProveedorInternet(Number(id), proveedorToUpdate);
 
       Swal.fire({
         icon: 'success',
@@ -114,21 +146,17 @@ const EditarProveedor: React.FC = () => {
             value={proveedor.nombre}
             onChange={handleInputChange}
             required
-            min="0"
-            max="99999999999"
           />
         </div>
         <div className="col-md-6">
           <label htmlFor="nit" className="form-label">Nit*</label>
           <input
-            type="text"
+            type="number"
             className="form-control"
             name="nit"
             value={proveedor.nit}
             onChange={handleInputChange}
             required
-            min="0"
-            max="99999999999"
           />
         </div>
         <div className="col-md-12">
@@ -145,14 +173,12 @@ const EditarProveedor: React.FC = () => {
         <div className="col-6">
           <label htmlFor="numero_contacto" className="form-label">Número de contacto*</label>
           <input
-            type="text"
+            type="tel"
             className="form-control"
             name="numero_contacto"
             value={proveedor.numero_contacto}
             onChange={handleInputChange}
             required
-            min="0"
-            max="99999999999"
           />
         </div>
         <div className="col-6">
@@ -164,8 +190,6 @@ const EditarProveedor: React.FC = () => {
             value={proveedor.correo}
             onChange={handleInputChange}
             required
-            min="0"
-            max="99999999999"
           />
         </div>
         <div className="col-md-6">
@@ -177,8 +201,6 @@ const EditarProveedor: React.FC = () => {
             value={proveedor.fecha_contratacion}
             onChange={handleInputChange}
             required
-            min="0"
-            max="99999999999"
           />
         </div>
         <div className="col-md-4">
@@ -207,20 +229,18 @@ const EditarProveedor: React.FC = () => {
         <div className="text-center">
           <button
             style={{
-              backgroundColor: '#f6952c', borderColor: '#f6952c',
+              backgroundColor: '#f6952c',
+              borderColor: '#f6952c',
               cursor: 'pointer',
               background: isHovered2 ? '#ffff' : '#f6952c',
-
               color: isHovered2 ? '#f6952c' : '#ffff',
-
             }}
             onMouseEnter={() => setIsHovered2(true)}
             onMouseLeave={() => setIsHovered2(false)}
-            type="submit" className="btn btn-secondary m-2"
-            onClick={() => navigate('/proveedores')}
+            type="submit"
+            className="btn btn-secondary m-2"
           >
             <i className="bi bi-box-arrow-up m-1" />ACTUALIZAR
-
           </button>
           <button
             style={{
