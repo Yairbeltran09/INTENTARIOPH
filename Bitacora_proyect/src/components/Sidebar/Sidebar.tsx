@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
     }
   }, []);
 
-  
+
 
   const getRoleName = (roleId: number) => {
     const roles: Record<number, string> = {
@@ -76,15 +76,72 @@ const Sidebar: React.FC = () => {
         {
           label: "Personal",
           icon: "M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2 M16 3.13a4 4 0 0 1 0 7.75 M21 21v-2a4 4 0 0 0 -3 -3.85",
-          path: "/personal"
+          path: "/Funcionarios"
         },
 
-        { label: "Portátiles", icon: "M3 19l18 0 M5 6m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z", path: "/portatiles" },
-        { label: "Monitores", icon: "M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10z M7 20h10 M9 16v4 M15 16v4", path: "/monitores" },
-        { label: "Teclados", icon: "M2 6m0 2a2 2 0 0 1 2 -2h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2z M6 10l0 .01 M10 10l0 .01 M14 10l0 .01 M18 10l0 .01 M6 14l0 .01 M18 14l0 .01 M10 14l4 .01", path: "/teclados" },
-        { label: "Mouse", icon: "M6 3m0 4a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-4a4 4 0 0 1 -4 -4z M12 3v7 M6 10h12", path: "/mouse" },
-        { label: "Diademas", icon: "M4 14v-3a8 8 0 1 1 16 0v3 M18 19c0 1.657 -2.686 3 -6 3 M4 14a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2v-3z M15 14a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2v-3z", path: "/diademas" },
-        { label: "Base Refrigeradora", icon: "M12 9v13 M19 17.17l-5.98 4.485a1.7 1.7 0 0 1 -2.04 0l-5.98 -4.485a2.5 2.5 0 0 1 -1 -2v-11.17a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1v11.17a2.5 2.5 0 0 1 -1 2z M4.3 3.3l6.655 5.186a1.7 1.7 0 0 0 2.09 0l6.655 -5.186", path: "/bases" },
+        {
+          label: "Portátiles",
+          icon: "M3 19l18 0 M5 6m0 1a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1z",
+          path: "/portatiles"
+        },
+
+        {
+          label: "Monitores",
+          icon: "M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10z M7 20h10 M9 16v4 M15 16v4",
+          path: "/monitores"
+        },
+
+        {
+          label: "Teclados",
+          icon: "M2 6m0 2a2 2 0 0 1 2 -2h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2z M6 10l0 .01 M10 10l0 .01 M14 10l0 .01 M18 10l0 .01 M6 14l0 .01 M18 14l0 .01 M10 14l4 .01",
+          path: "/teclados"
+        },
+
+        {
+          label: "Mouse",
+          icon: "M6 3m0 4a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-4a4 4 0 0 1 -4 -4z M12 3v7 M6 10h12",
+          path: "/Mouses"
+        },
+
+        {
+          label: "Diademas",
+          icon: "M4 14v-3a8 8 0 1 1 16 0v3 M18 19c0 1.657 -2.686 3 -6 3 M4 14a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2v-3z M15 14a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2v-3z",
+          path: "/diademas"
+        },
+
+        {
+          label: "Base Refrigeradora",
+          icon: "M12 9v13 M19 17.17l-5.98 4.485a1.7 1.7 0 0 1 -2.04 0l-5.98 -4.485a2.5 2.5 0 0 1 -1 -2v-11.17a1 1 0 0 1 1 -1h14a1 1 0 0 1 1 1v11.17a2.5 2.5 0 0 1 -1 2z M4.3 3.3l6.655 5.186a1.7 1.7 0 0 0 2.09 0l6.655 -5.186",
+          path: "/BasesRefrigeradoras"
+        },
+      ],
+    },
+
+    {
+      heading: "GESTION",
+      items: [
+        {
+          label: "Entrega de Activo",
+          icon: "M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18 M13 8l2 0 M13 12l2 0",
+          path: "/EngraEquipos"
+        },
+
+        {
+          label: "Baja de Activo",
+          icon: "M8 4h9a2 2 0 0 1 2 2v9m-.179 3.828a2 2 0 0 1 -1.821 1.172h-11a1 1 0 0 1 -1 -1v-14m4 -1v1m0 4v13 M13 8h2 M3 3l18 18",
+          path: "/BajaActivo"
+        }
+      ],
+    },
+
+    {
+      heading: "ADMINISTRACION",
+      items: [
+        {
+          label: "Usuarios",
+          icon: "M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0 M16 19h6 M19 16v6 M6 21v-2a4 4 0 0 1 4 -4h4",
+          path: "/usuarios"
+        }
       ],
     },
   ];
@@ -161,18 +218,16 @@ const Sidebar: React.FC = () => {
                 </span>
               </div>
             </div>
-          <Link to="/login" >
-            <Button
-              className="d-flex align-items-center p-1"
-              variant="link"
-              style={{ color: "#f6952c" }}
-              onClick={logout}
-
-            >
-              <i className="bi bi-box-arrow-right"></i>
-            </Button>
-
-          </Link> 
+            <Link to="/login" >
+              <Button
+                className="d-flex align-items-center p-1"
+                variant="link"
+                style={{ color: "#f6952c" }}
+                onClick={logout}
+              >
+                <i className="bi bi-box-arrow-right"></i>
+              </Button>
+            </Link>
 
           </div>
         </div>

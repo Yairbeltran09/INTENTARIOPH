@@ -16,7 +16,14 @@ interface Proveedor {
   isDeleted: boolean;
 }
 
-const EditarProveedor: React.FC = () => {
+interface FormularioEditarPProps {
+  ProveedorID: number;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+
+function EditarProveedor({ ProveedorID, onClose, onSuccess }: FormularioEditarPProps) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
