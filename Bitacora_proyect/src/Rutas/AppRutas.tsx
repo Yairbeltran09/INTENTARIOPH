@@ -19,6 +19,8 @@ import PaginaMouse from "../Paginas/Mouse";
 import PaginaDiademas from "../Paginas/Diademas";
 import PaginaBaseRefrigeradora from "../Paginas/BaseRefrigeradora";
 import PaginaEntregaEquipos from "../Paginas/EntregaEquipos";
+import PaginaBajaEquipos from "../Paginas/BajaEquipos";
+import PaginaUsuarios from "../Paginas/PaginaUsuarios";
 
 export const AppRutas = () => {
   return (
@@ -179,6 +181,25 @@ export const AppRutas = () => {
           </ProtectedRoute>
         }>
       </Route>
+
+      <Route
+        path="/BajaEquipos"
+        element={
+          <ProtectedRoute allowedRoles={[1, 2]}>
+            <PaginaBajaEquipos />
+          </ProtectedRoute>
+        }>
+      </Route>
+
+      <Route
+        path="/usuarios"
+        element={
+          <ProtectedRoute allowedRoles={[1, 2]}>
+            <PaginaUsuarios />
+          </ProtectedRoute>
+        }>
+      </Route>
+
 
       <Route path="/*" element={<Navigate to="/login" />} />
     </Routes>
