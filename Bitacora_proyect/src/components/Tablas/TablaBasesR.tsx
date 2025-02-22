@@ -3,9 +3,20 @@ import { Badge, FormControl, Card, Modal, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { getBaseRefrigeradora, deleteBaseRefrigeradora } from '../../servicios/BaseRefrigeradoraService';
 import FormularioEditarP from '../FormulariosEditar.tsx/FormularioEditarP';
+import { format } from 'date-fns';
+
+interface BaseRefrigeradora {
+    id: number;
+    serial: string;
+    marca: string;
+    modelo: string;
+    fecha_compra: string;
+    descripcion: string;
+    estado: string;
+}
 
 const TablaBaseRefrigeradora: React.FC = () => {
-    const [BaseRefrigeradora, setBaseRefrigeradora] = useState<any[]>([]);
+    const [baseRefrigeradora, setBaseRefrigeradora] = useState<BaseRefrigeradora[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +38,6 @@ const TablaBaseRefrigeradora: React.FC = () => {
     const handleShow = () => setShowModal(true);
     const handleClose = () => setShowModal(false);
 
-
     useEffect(() => {
         const loadBaseRefrigeradora = async () => {
             try {
@@ -40,11 +50,18 @@ const TablaBaseRefrigeradora: React.FC = () => {
                     },
                 });
 
-                const data = await getBaseRefrigeradora();
-                setBaseRefrigeradora(data);
+                const response = await getBaseRefrigeradora();
+                const data = Array.isArray(response) ? response : response.data;
+
+                if (Array.isArray(data)) {
+                    setBaseRefrigeradora(data);
+                } else {
+                    console.error('Datos recibidos:', data);
+                    throw new Error('Los datos recibidos no tienen el formato esperado');
+                }
             } catch (error) {
                 setError('Error al cargar el listado de Bases');
-                console.error(error);
+                console.error('Error detallado:', error);
             } finally {
                 setLoading(false);
                 Swal.close();
@@ -71,7 +88,7 @@ const TablaBaseRefrigeradora: React.FC = () => {
 
             if (result.isConfirmed) {
                 await deleteBaseRefrigeradora(id);
-                setBaseRefrigeradora((prev) => prev.filter((BaseRefrigeradora) => BaseRefrigeradora.id !== id));
+                setBaseRefrigeradora((prev) => prev.filter((item) => item.id !== id));
                 Swal.fire('¡Eliminado!', 'El Activo ha sido eliminado.', 'success');
             }
         } catch (error) {
@@ -84,15 +101,15 @@ const TablaBaseRefrigeradora: React.FC = () => {
         }
     };
 
-    const filteredBaseRefrigeradora = BaseRefrigeradora.filter((BaseRefrigeradora) => {
-        return (
-            (BaseRefrigeradora.descripcion?.toLowerCase().includes(filterDescripcion.toLowerCase()) || !filterDescripcion) &&
-            (BaseRefrigeradora.fecha_compra?.toLowerCase().includes(filterFechaCompra.toLowerCase()) || !filterFechaCompra) &&
-            (BaseRefrigeradora.marca?.toLowerCase().includes(filterMarca.toLowerCase()) || !filterMarca) &&
-            (BaseRefrigeradora.modelo?.toLowerCase().includes(filterModelo.toLowerCase()) || !filterModelo) &&
-            (BaseRefrigeradora.estado?.toLowerCase().includes(filterEstado.toLowerCase()) || !filterEstado) &&
-            (BaseRefrigeradora.serial?.toLowerCase().includes(filterSerial.toLowerCase()) || !filterSerial)
-        );
+    const filteredBaseRefrigeradora = baseRefrigeradora.filter((item) => {
+        const serialMatch = !filterSerial || item.serial?.toLowerCase().includes(filterSerial.toLowerCase());
+        const marcaMatch = !filterMarca || item.marca?.toLowerCase().includes(filterMarca.toLowerCase());
+        const modeloMatch = !filterModelo || item.modelo?.toLowerCase().includes(filterModelo.toLowerCase());
+        const fechaMatch = !filterFechaCompra || item.fecha_compra?.includes(filterFechaCompra);
+        const descripcionMatch = !filterDescripcion || item.descripcion?.toLowerCase().includes(filterDescripcion.toLowerCase());
+        const estadoMatch = !filterEstado || item.estado?.toLowerCase().includes(filterEstado.toLowerCase());
+
+        return serialMatch && marcaMatch && modeloMatch && fechaMatch && descripcionMatch && estadoMatch;
     });
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -108,18 +125,17 @@ const TablaBaseRefrigeradora: React.FC = () => {
         setFilterFechaCompra('');
         setFilterDescripcion('');
         setFilterEstado('');
+        setFilterSerial('');
     };
 
     return (
         <>
-
             <Modal show={showModal} onHide={handleClose} centered size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>Nueva Base Refrigeradora</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <>
-
                     </>
                 </Modal.Body>
             </Modal>
@@ -135,12 +151,13 @@ const TablaBaseRefrigeradora: React.FC = () => {
                     </nav>
                 </div>
                 <div className="ms-auto">
-
-                    <Button onClick={handleShow} className="btn" style={{ backgroundColor: '#f6952c', borderColor: '#f6952c' }}
+                    <Button
+                        onClick={handleShow}
+                        className="btn"
+                        style={{ backgroundColor: '#f6952c', borderColor: '#f6952c' }}
                     >
                         <i className="bi bi-plus-circle-fill me-2"></i> Nueva Base Refrigeradora
                     </Button>
-
                 </div>
             </div>
 
@@ -152,8 +169,8 @@ const TablaBaseRefrigeradora: React.FC = () => {
                                 <th>
                                     <FormControl
                                         size="sm"
-                                        type="date"
-                                        placeholder="Filtrar"
+                                        type="text"
+                                        placeholder="Filtrar serial"
                                         value={filterSerial}
                                         onChange={(e) => setFilterSerial(e.target.value)}
                                     />
@@ -163,7 +180,7 @@ const TablaBaseRefrigeradora: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar correo"
+                                        placeholder="Filtrar marca"
                                         value={filterMarca}
                                         onChange={(e) => setFilterMarca(e.target.value)}
                                     />
@@ -173,7 +190,7 @@ const TablaBaseRefrigeradora: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar contacto"
+                                        placeholder="Filtrar modelo"
                                         value={filterModelo}
                                         onChange={(e) => setFilterModelo(e.target.value)}
                                     />
@@ -183,7 +200,6 @@ const TablaBaseRefrigeradora: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="date"
-                                        placeholder="Filtrar número"
                                         value={filterFechaCompra}
                                         onChange={(e) => setFilterFechaCompra(e.target.value)}
                                     />
@@ -193,7 +209,7 @@ const TablaBaseRefrigeradora: React.FC = () => {
                                     <FormControl
                                         size="sm"
                                         type="text"
-                                        placeholder="Filtrar número"
+                                        placeholder="Filtrar descripción"
                                         value={filterDescripcion}
                                         onChange={(e) => setFilterDescripcion(e.target.value)}
                                     />
@@ -210,7 +226,12 @@ const TablaBaseRefrigeradora: React.FC = () => {
                                     ESTADO
                                 </th>
                                 <th className="text-center">
-                                    <button style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={clearFilters} type="button" className="btn btn-light btn-sm">
+                                    <button
+                                        style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
+                                        onClick={clearFilters}
+                                        type="button"
+                                        className="btn btn-light btn-sm"
+                                    >
                                         <i className='bi bi-brush' />
                                     </button>
                                     <span style={{ display: 'block', marginTop: '4px' }}>
@@ -225,16 +246,17 @@ const TablaBaseRefrigeradora: React.FC = () => {
                                     <td>
                                         <div className="d-flex align-items-center">
                                             <div>
-                                                <div >{baseRefrigeradora.serial}</div>
+                                                <div>{baseRefrigeradora.serial}</div>
                                                 <small className="text-muted">ID: {baseRefrigeradora.id}</small>
                                             </div>
                                         </div>
                                     </td>
                                     <td>{baseRefrigeradora.marca}</td>
                                     <td>
-                                        <div >{baseRefrigeradora.modelo}</div>
+                                        <div>{baseRefrigeradora.modelo}</div>
                                     </td>
-                                    <td>{baseRefrigeradora.fecha_compra}</td>
+                                    <td>{format(new Date(baseRefrigeradora.fecha_compra), 'yyyy-MM-dd')}</td>
+                                    <td>{baseRefrigeradora.descripcion}</td>
                                     <td>
                                         <Badge bg={baseRefrigeradora.estado === 'ASIGNADO' ? 'danger' : 'success'} className="rounded-pill">
                                             {baseRefrigeradora.estado}
@@ -268,7 +290,6 @@ const TablaBaseRefrigeradora: React.FC = () => {
                 </div>
             </div>
 
-
             <Modal show={showModal2} onHide={handleClose2} centered size="lg">
                 <Modal.Header closeButton style={{ backgroundColor: '#f8f9fa' }}>
                     <Modal.Title>
@@ -279,26 +300,30 @@ const TablaBaseRefrigeradora: React.FC = () => {
                 <Modal.Body>
                     {selectedBaseRefrigeradoraId && (
                         <FormularioEditarP
-                            baseRefrigeradoraId={setSelectedBaseRefrigeradoraId}
+                            baseRefrigeradoraId={selectedBaseRefrigeradoraId}
                             onClose={handleClose2}
                             onSuccess={() => {
                                 const loadBaseRefrigeradora = async () => {
                                     try {
-                                        const data = await getBaseRefrigeradora();
-                                        setBaseRefrigeradora(data);
-                                        handleClose2();
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: '¡Actualizado!',
-                                            text: 'El proveedor ha sido actualizado exitosamente',
-                                            timer: 1500
-                                        });
+                                        const response = await getBaseRefrigeradora();
+                                        const data = Array.isArray(response) ? response : response.data;
+
+                                        if (Array.isArray(data)) {
+                                            setBaseRefrigeradora(data);
+                                            handleClose2();
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: '¡Actualizado!',
+                                                text: 'La base refrigeradora ha sido actualizada exitosamente',
+                                                timer: 1500
+                                            });
+                                        }
                                     } catch (error) {
-                                        console.error('Error al recargar proveedores:', error);
+                                        console.error('Error al recargar bases refrigeradoras:', error);
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Error',
-                                            text: 'No se pudieron recargar los proveedores'
+                                            text: 'No se pudieron recargar las bases refrigeradoras'
                                         });
                                     }
                                 };
@@ -309,9 +334,8 @@ const TablaBaseRefrigeradora: React.FC = () => {
                 </Modal.Body>
             </Modal>
 
-
             <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', backgroundColor: '#ffff', borderBottom: '20px' }}>
-                <ul className="pagination pagination-sm" >
+                <ul className="pagination pagination-sm">
                     <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                         <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(1)}>
                             <i className="bi bi-chevron-double-left"></i>
@@ -322,15 +346,15 @@ const TablaBaseRefrigeradora: React.FC = () => {
                             <i className="bi bi-chevron-left"></i>
                         </button>
                     </li>
-                    <li className=" m-1 page-item active">
+                    <li className="m-1 page-item active">
                         <span className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}>{currentPage}</span>
                     </li>
-                    <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                    <li className={`m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                         <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(currentPage + 1)}>
                             <i className="bi bi-chevron-right"></i>
                         </button>
                     </li>
-                    <li className={` m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                    <li className={`m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                         <button className="page-link" style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} onClick={() => handlePageChange(totalPages)}>
                             <i className="bi bi-chevron-double-right"></i>
                         </button>

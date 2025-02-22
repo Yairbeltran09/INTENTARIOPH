@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/diademas")
+    @RequestMapping("/api/diademas")
 public class DiademasController {
 
     @Autowired
@@ -42,7 +42,7 @@ public class DiademasController {
         if (updatedDiademas != null) {
             updatedDiademas.setDescripcion(diademasDetails.getDescripcion());
             updatedDiademas.setEstado(diademasDetails.getEstado());
-            updatedDiademas.setFecha_compra(diademasDetails.getFecha_compra());
+            updatedDiademas.setFechaCompra(diademasDetails.getFechaCompra());
             updatedDiademas.setFuncionarios(diademasDetails.getFuncionarios());
             updatedDiademas.setMarca(diademasDetails.getMarca());
             updatedDiademas.setModelo(diademasDetails.getModelo());

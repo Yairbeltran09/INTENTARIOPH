@@ -1,6 +1,10 @@
 package com.pharmaser.bitacora.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
+import java.util.Date;
 
 @Entity
 public class BaseRefrigeradora {
@@ -9,17 +13,29 @@ public class BaseRefrigeradora {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String Marca;
-    private String Modelo;
-    private String Serial;
+    private String marca;
+    private String modelo;
+    private String serial;
+    private String estado;
 
-    private String Estado;
-    private String Fecha_compra;
+    @JsonProperty("fecha_compra")
+    private Date fechaCompra;
 
-    private String Descripcion;
+    private String descripcion;
+
+    private Boolean isDeleted = false;
 
     @OneToOne(mappedBy = "baseRefrigeradora")
+    @JsonBackReference // Se omite para evitar la referencia circular
     private Funcionarios funcionarios;
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 
     public long getId() {
         return id;
@@ -30,51 +46,59 @@ public class BaseRefrigeradora {
     }
 
     public String getMarca() {
-        return Marca;
+        return marca;
     }
 
     public void setMarca(String marca) {
-        Marca = marca;
-    }
-
-    public String getModelo() {
-        return Modelo;
-    }
-
-    public void setModelo(String modelo) {
-        Modelo = modelo;
-    }
-
-    public String getSerial() {
-        return Serial;
-    }
-
-    public void setSerial(String serial) {
-        Serial = serial;
-    }
-
-    public String getEstado() {
-        return Estado;
-    }
-
-    public void setEstado(String estado) {
-        Estado = estado;
-    }
-
-    public String getFecha_compra() {
-        return Fecha_compra;
-    }
-
-    public void setFecha_compra(String fecha_compra) {
-        Fecha_compra = fecha_compra;
+        this.marca = marca;
     }
 
     public String getDescripcion() {
-        return Descripcion;
+        return descripcion;
     }
 
     public void setDescripcion(String descripcion) {
-        Descripcion = descripcion;
+        this.descripcion = descripcion;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public Date getFechaCompra() {
+        return fechaCompra;
+    }
+
+    public void setFechaCompra(Date fechaCompra) {
+        this.fechaCompra = fechaCompra;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
     }
 
     public Funcionarios getFuncionarios() {

@@ -15,8 +15,6 @@ public class FarmaciasService {
     private FarmaciasRepository farmaciasRepo;
 
     public List<Farmacias> findAll() {
-
-
         return farmaciasRepo.findAllByIsDeletedFalse();
     }
 
@@ -25,7 +23,6 @@ public class FarmaciasService {
     }
 
     public Farmacias save(Farmacias farmacia) {
-
         return farmaciasRepo.save(farmacia);
     }
 

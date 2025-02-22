@@ -16,7 +16,7 @@ public class BaseRefrigeradoraService {
 
 
     public List<BaseRefrigeradora> findAll() {
-        return baseRefrigeradoraRepository.findAll();
+        return baseRefrigeradoraRepository.findAllByIsDeletedFalse();
     }
 
     public BaseRefrigeradora findById(Long id) {
@@ -27,7 +27,11 @@ public class BaseRefrigeradoraService {
         return baseRefrigeradoraRepository.save(baseRefrigeradora);
     }
 
-    public void delete(Long id) {
-        baseRefrigeradoraRepository.deleteById(id);
+    public void softDelete(Long id) {
+        BaseRefrigeradora baseRefrigeradora = baseRefrigeradoraRepository.findById(id).orElse(null);
+        if (baseRefrigeradora != null) {
+            baseRefrigeradora.setIsDeleted(true);
+            baseRefrigeradoraRepository.save(baseRefrigeradora);
+        }
     }
 }

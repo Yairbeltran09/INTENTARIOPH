@@ -30,7 +30,7 @@ export const createBaseRefrigeradora = async (data: any) => {
     return response.data;
   } catch (error) {
     console.error('Error al crear la base:', error);
-    throw new Error('Error al crear la base');  
+    throw new Error('Error al crear la base');
   }
 };
 
@@ -45,6 +45,6 @@ export const updateBaseRefrigeradora = async (id: number, baserefrigeradoraData:
     return response.data;
   } catch (error) {
     console.error('Error updating base:', error);
-    throw error; 
+    throw error;
   }
 }

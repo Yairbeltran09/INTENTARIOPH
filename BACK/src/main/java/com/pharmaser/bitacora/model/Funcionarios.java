@@ -1,7 +1,8 @@
 package com.pharmaser.bitacora.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import java.util.List;
+
 
 
 @Entity
@@ -14,11 +15,10 @@ public class Funcionarios {
     private String nombre;
     private String apellido;
     private String area;
-    private String Correo;
-
+    private String correo;
 
     @ManyToOne
-    @JoinColumn(name = "Farmcias")
+    @JoinColumn(name = "Farmacias")
     private Farmacias farmacias;
 
     @OneToOne
@@ -39,6 +39,7 @@ public class Funcionarios {
 
     @OneToOne
     @JoinColumn(name = "id_BaseRefrigeradora")
+    @JsonManagedReference
     private BaseRefrigeradora baseRefrigeradora;
 
     @OneToOne
@@ -83,13 +84,12 @@ public class Funcionarios {
     }
 
     public String getCorreo() {
-        return Correo;
+        return correo;
     }
 
     public void setCorreo(String correo) {
-        Correo = correo;
+        this.correo = correo;
     }
-
 
     public Farmacias getFarmacias() {
         return farmacias;

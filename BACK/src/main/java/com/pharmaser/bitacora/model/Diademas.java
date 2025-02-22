@@ -1,6 +1,10 @@
 package com.pharmaser.bitacora.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
+import java.util.Date;
+
 @Entity
 public class Diademas {
 
@@ -13,7 +17,9 @@ public class Diademas {
     private String Serial;
 
     private String Estado;
-    private String Fecha_compra;
+
+    @JsonProperty("fecha_compra")
+    private Date FechaCompra;
 
     private String Descripcion;
 
@@ -61,12 +67,12 @@ public class Diademas {
         Estado = estado;
     }
 
-    public String getFecha_compra() {
-        return Fecha_compra;
+    public Date getFechaCompra() {
+        return FechaCompra;
     }
 
-    public void setFecha_compra(String fecha_compra) {
-        Fecha_compra = fecha_compra;
+    public void setFechaCompra(Date fechaCompra) {
+        FechaCompra = fechaCompra;
     }
 
     public String getDescripcion() {

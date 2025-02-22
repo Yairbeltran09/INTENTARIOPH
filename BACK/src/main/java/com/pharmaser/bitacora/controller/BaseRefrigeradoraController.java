@@ -2,6 +2,7 @@ package com.pharmaser.bitacora.controller;
 
 
 import com.pharmaser.bitacora.model.BaseRefrigeradora;
+import com.pharmaser.bitacora.model.Farmacias;
 import com.pharmaser.bitacora.service.BaseRefrigeradoraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/baseRefrigeradora")
 public class BaseRefrigeradoraController {
@@ -17,7 +19,7 @@ public class BaseRefrigeradoraController {
     private BaseRefrigeradoraService baseRefrigeradoraService;
 
     @GetMapping("")
-    public List<BaseRefrigeradora>getAllBaseRefrigeradoras(){
+    public List<BaseRefrigeradora>getAllBaseRefrigeradora(){
         return baseRefrigeradoraService.findAll();
     }
 
@@ -47,7 +49,7 @@ public class BaseRefrigeradoraController {
             updatedBaseRefrigeradora.setDescripcion(baseRefrigeradoraDetails.getDescripcion());
             updatedBaseRefrigeradora.setFuncionarios(baseRefrigeradoraDetails.getFuncionarios());
             updatedBaseRefrigeradora.setSerial(baseRefrigeradoraDetails.getSerial());
-            updatedBaseRefrigeradora.setFecha_compra(baseRefrigeradoraDetails.getFecha_compra());
+            updatedBaseRefrigeradora.setFechaCompra(baseRefrigeradoraDetails.getFechaCompra());
             return ResponseEntity.ok(baseRefrigeradoraService.save(updatedBaseRefrigeradora));
         }else {
             return ResponseEntity.notFound().build();
@@ -55,12 +57,13 @@ public class BaseRefrigeradoraController {
 
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBaseRefrigeradora(@PathVariable Long id){
-        if (baseRefrigeradoraService.findById(id) != null) {
-            baseRefrigeradoraService.delete(id);
+    @PutMapping("/softDelete/{id}")
+    public ResponseEntity<Void> softDeleteBaseR(@PathVariable Long id) {
+        BaseRefrigeradora baseRefrigeradora = baseRefrigeradoraService.findById(id);
+        if (baseRefrigeradora != null) {
+            baseRefrigeradoraService.softDelete(id);
             return ResponseEntity.noContent().build();
-        }else {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }

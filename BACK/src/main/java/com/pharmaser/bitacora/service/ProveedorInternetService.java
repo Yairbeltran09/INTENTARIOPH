@@ -16,7 +16,6 @@ public class ProveedorInternetService {
     private ProveedorInternetRepository proveedorRepo;
 
     public List<ProveedorInternet> findAll() {
-        // Puedes agregar un filtro para que no se muestren los registros con isDeleted = true
         return proveedorRepo.findAllByIsDeletedFalse();
     }
 
@@ -26,7 +25,7 @@ public class ProveedorInternetService {
 
     public ProveedorInternet save(ProveedorInternet proveedorInternet) {
         if (proveedorInternet.getEstado() == null) {
-            proveedorInternet.setEstado("ACTIVO"); // Valor por defecto
+            proveedorInternet.setEstado("ACTIVO");
         }
         return proveedorRepo.save(proveedorInternet);
     }
