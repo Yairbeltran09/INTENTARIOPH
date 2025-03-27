@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Badge, FormControl, Card, Modal, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { getProveedor_internet, deleteProveedor } from '../../servicios/ProveedoresService';
-import { Link } from 'react-router-dom';
 import FormularioCrear from '../FormulariosCrear/FormularioCrear';
 import FormularioEditarP from '../FormulariosEditar.tsx/FormularioEditarP';
 

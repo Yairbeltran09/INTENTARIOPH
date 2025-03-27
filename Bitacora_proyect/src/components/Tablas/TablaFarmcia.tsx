@@ -12,7 +12,7 @@ const FarmaciaTabla: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  
+
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [selectedFarmaciaId, setSelectedFarmaciaId] = useState<number | null>(null);
@@ -59,16 +59,27 @@ const FarmaciaTabla: React.FC = () => {
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>{error}</div>;
 
+  const normalizedFilterNombre = filterNombre.toLowerCase();
+  const normalizedFilterDireccion = filterDireccion.toLowerCase();
+  const normalizedFilterCiudad = filterCiudad.toLowerCase();
+  const normalizedFilterDepartamento = filterDepartamento.toLowerCase();
+  const normalizedFilterProveedor = filterProveedor.toLowerCase();
+  const normalizedFilterPertenece = filterPertenece.toLowerCase();
+
   const filteredFarmacias = farmacias.filter(farmacia => {
-    return (
-      (farmacia?.nombre || '').toLowerCase().includes(filterNombre.toLowerCase()) &&
-      (farmacia?.direccion || '').toLowerCase().includes(filterDireccion.toLowerCase()) &&
-      (farmacia?.ciudad?.nombre_ciudad || '').toLowerCase().includes(filterCiudad.toLowerCase()) &&
-      (farmacia?.ciudad?.departamento?.nombre || '').toLowerCase().includes(filterDepartamento.toLowerCase()) &&
-      (farmacia?.proveedor?.nombre || '').toLowerCase().includes(filterProveedor.toLowerCase()) &&
-      (farmacia?.pertenece || '').toLowerCase().includes(filterPertenece.toLowerCase())
-    );
+    if (
+      (filterNombre && !(farmacia?.nombre || '').toLowerCase().includes(normalizedFilterNombre)) ||
+      (filterDireccion && !(farmacia?.direccion || '').toLowerCase().includes(normalizedFilterDireccion)) ||
+      (filterCiudad && !(farmacia?.ciudad?.nombre_ciudad || '').toLowerCase().includes(normalizedFilterCiudad)) ||
+      (filterDepartamento && !(farmacia?.ciudad?.departamento?.nombre || '').toLowerCase().includes(normalizedFilterDepartamento)) ||
+      (filterProveedor && !(farmacia?.proveedor?.nombre || '').toLowerCase().includes(normalizedFilterProveedor)) ||
+      (filterPertenece && !(farmacia?.pertenece || '').toLowerCase().includes(normalizedFilterPertenece))
+    ) {
+      return false;
+    }
+    return true;
   });
+
 
   const handleDelete = async (id: number) => {
     try {

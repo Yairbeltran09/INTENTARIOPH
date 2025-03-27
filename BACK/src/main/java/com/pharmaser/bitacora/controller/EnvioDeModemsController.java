@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/enviosmodems")
-@CrossOrigin(origins = "*")
 public class EnvioDeModemsController {
 
     @Autowired

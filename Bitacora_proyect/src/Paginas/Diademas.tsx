@@ -1,5 +1,5 @@
 import Layout from "../components/Layout/Layout";
-import TablaDiademas from "../components/Tablas/TablaDIademas";
+import TablaDiademas from "../components/Tablas/TablaDiademas";
 
 const PaginaDiademas = () => {
     return (

@@ -7,7 +7,6 @@ import { Farmacias } from "../Paginas/Farmacias";
 import { EditarProveedor } from "../Paginas/EditarProveedor";
 import { EditarFarmacia } from "../Paginas/EditarFarmacias";
 import { CrearReporte } from "../Paginas/CrearReportes";
-import { EditarReporte } from "../Paginas/EditarReporte";
 import { Modems } from "../Paginas/Modems";
 import { EnviosModems } from "../Paginas/EnvioModems";
 import ProtectedRoute from "../Rutas/ProtectedRoute";
@@ -40,14 +39,6 @@ export const AppRutas = () => {
         element={
           <ProtectedRoute allowedRoles={[1, 2]}>
             <CrearReporte />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/editarReporte/:id"
-        element={
-          <ProtectedRoute allowedRoles={[1, 2]}>
-            <EditarReporte />
           </ProtectedRoute>
         }
       />

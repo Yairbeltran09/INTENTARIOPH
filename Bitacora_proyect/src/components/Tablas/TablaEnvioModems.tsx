@@ -65,13 +65,14 @@ const EnviosTable: React.FC = () => {
   if (error) return <div>{error}</div>;
 
   const filteredEnvios = envios.filter(envio => {
-    const matchFarmacia = envio.farmacia.nombre.toLowerCase().includes(filterFarmacia.toLowerCase());
-    const matchModem = envio.modem.numero_serie.toLowerCase().includes(filterModem.toLowerCase());
-    const matchFecha = format(new Date(envio.fecha_envio), 'yyyy-MM-dd').includes(filterFecha);
-    const matchEstado = envio.estado_envio.toLowerCase().includes(filterEstado.toLowerCase());
+    const matchFarmacia = (envio?.farmacia?.nombre || '').toLowerCase().includes(filterFarmacia.toLowerCase());
+    const matchModem = (envio?.modem?.numero_serie || '').toLowerCase().includes(filterModem.toLowerCase());
+    const matchFecha = format(new Date(envio?.fecha_envio || new Date(0)), 'yyyy-MM-dd').includes(filterFecha);
+    const matchEstado = (envio?.estado_envio || '').toLowerCase().includes(filterEstado.toLowerCase());
 
     return matchFarmacia && matchModem && matchFecha && matchEstado;
   });
+
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -168,9 +169,9 @@ const EnviosTable: React.FC = () => {
                   ESTADO
                 </th>
                 <th className="text-center">
-                  <button 
+                  <button
                     className="btn btn-light btn-sm"
-                    style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }} 
+                    style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
                     onClick={clearFilters}
                   >
                     <i className='bi bi-brush' />
@@ -183,30 +184,30 @@ const EnviosTable: React.FC = () => {
             </thead>
             <tbody>
               {currentEnvios.map((envio) => (
-                <tr key={envio.id}>
+                <tr key={envio?.id || Math.random()}>
                   <td>
                     <div className="d-flex align-items-center">
                       <div>
-                        <div>{envio.farmacia.nombre}</div>
-                        <small className="text-muted">ID: {envio.id}</small>
+                        <div>{envio?.farmacia?.nombre}</div>
+                        <small className="text-muted">ID: {envio?.id}</small>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <div>{envio.modem.marca} - {envio.modem.modelo}</div>
-                    <small className="text-muted">Serie: {envio.modem.numero_serie}</small>
+                    <div>{envio?.modem?.marca} - {envio?.modem?.modelo}</div>
+                    <small className="text-muted">Serie: {envio?.modem?.numero_serie}</small>
                   </td>
-                  <td>{format(new Date(envio.fecha_envio), 'dd/MM/yyyy HH:mm')}</td>
-                  <td>${envio.costo_envio}</td>
+                  <td>{envio?.fecha_envio ? format(new Date(envio.fecha_envio), 'dd/MM/yyyy') : 'N/A'}</td>
+                  <td>${envio?.costo_envio ?? ''}</td>
                   <td>
-                    <Badge bg={envio.estado_envio === 'ENVIADO' ? 'success' : 'warning'}>
-                      {envio.estado_envio}
+                    <Badge bg={envio?.estado_envio === 'DEVUELTO' ? 'success' : 'warning'}>
+                      {envio?.estado_envio || 'Desconocido'}
                     </Badge>
                   </td>
                   <td>
                     <div className="d-flex justify-content-end btn-group">
-                      <Link 
-                        to={`/EditarEnvio/${envio.id}`} 
+                      <Link
+                        to={`/EditarEnvio/${envio?.id}`}
                         className="btn btn-light btn-sm"
                         style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
                       >
@@ -215,7 +216,8 @@ const EnviosTable: React.FC = () => {
                       <button
                         className="btn btn-sm"
                         style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
-                        onClick={() => handleDelete(envio.id)}
+                        onClick={() => envio?.id && handleDelete(envio.id)}
+                        disabled={!envio?.id}
                       >
                         <i className="bi bi-trash"></i>
                       </button>
@@ -224,14 +226,15 @@ const EnviosTable: React.FC = () => {
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
       </div>
       <Card.Footer style={{ display: 'flex', justifyContent: 'flex-end', backgroundColor: '#ffff' }}>
         <ul className="pagination pagination-sm">
           <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-            <button 
-              className="page-link" 
+            <button
+              className="page-link"
               style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
               onClick={() => handlePageChange(1)}
             >
@@ -239,8 +242,8 @@ const EnviosTable: React.FC = () => {
             </button>
           </li>
           <li className={`m-1 page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-            <button 
-              className="page-link" 
+            <button
+              className="page-link"
               style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
               onClick={() => handlePageChange(currentPage - 1)}
             >
@@ -248,16 +251,16 @@ const EnviosTable: React.FC = () => {
             </button>
           </li>
           <li className="m-1 page-item active">
-            <span 
-              className="page-link" 
+            <span
+              className="page-link"
               style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
             >
               {currentPage}
             </span>
           </li>
           <li className={`m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-            <button 
-              className="page-link" 
+            <button
+              className="page-link"
               style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
               onClick={() => handlePageChange(currentPage + 1)}
             >
@@ -265,8 +268,8 @@ const EnviosTable: React.FC = () => {
             </button>
           </li>
           <li className={`m-1 page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-            <button 
-              className="page-link" 
+            <button
+              className="page-link"
               style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
               onClick={() => handlePageChange(totalPages)}
             >
