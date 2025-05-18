@@ -251,13 +251,7 @@ const ModemsTable: React.FC = () => {
                                             >
                                                 <i className="bi bi-pencil"></i>
                                             </Link>
-                                            <button
-                                                className="btn btn-sm"
-                                                style={{ backgroundColor: "#ffb361", color: '#fff', borderColor: '#ffb361' }}
-                                                onClick={() => handleDelete(modem.id)}
-                                            >
-                                                <i className="bi bi-trash"></i>
-                                            </button>
+                                            
                                         </div>
                                     </td>
                                 </tr>

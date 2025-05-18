@@ -29,10 +29,12 @@
     "lucide-react": "^0.454.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.0",
+    "react-bootstrap-icons": "^1.11.6",
     "react-dom": "^18.2.0",
     "react-feather": "^2.0.10",
     "react-router-dom": "^6.21.3",
-    "sweetalert2": "^11.10.3"
+    "sweetalert2": "^11.10.3",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",

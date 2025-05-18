@@ -32,6 +32,9 @@ const Sidebar: React.FC = () => {
 
   const sections = [
 
+
+    /*
+    
     {
       heading: "DASHBOARD",
       items: [
@@ -43,6 +46,10 @@ const Sidebar: React.FC = () => {
       ],
 
     },
+    
+    */
+
+    
 
 
     {
@@ -84,6 +91,8 @@ const Sidebar: React.FC = () => {
         }
       ],
     },
+
+    /*
     {
       heading: "INVENTARIO",
       items: [
@@ -157,7 +166,8 @@ const Sidebar: React.FC = () => {
           path: "/usuarios"
         }
       ],
-    },
+    },*/
+    
   ];
 
   return (
