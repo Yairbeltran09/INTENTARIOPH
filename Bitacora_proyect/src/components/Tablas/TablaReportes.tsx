@@ -11,6 +11,7 @@ import FormularioEnvioM from "../FormulariosCrear/FormularioEnvioM"
 import { format } from "date-fns"
 import { Download, ArrowUp, ArrowDown } from "react-bootstrap-icons"
 import * as XLSX from "xlsx"
+import { getCurrentUser } from "../../servicios/authServices"
 
 const ReporteTable: React.FC = () => {
   const [reportes, setReportes] = useState<any[]>([])
@@ -18,6 +19,7 @@ const ReporteTable: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
+  const [currentUser, setCurrentUser] = useState<any>(null)
 
   // Filtros
   const [filterFecha, setFilterFecha] = useState<string>("")
@@ -30,7 +32,7 @@ const ReporteTable: React.FC = () => {
   const [filterEstado, setFilterEstado] = useState<string>("")
 
   // Estado para ordenamiento
-  const [sortField, setSortField] = useState<string>("")
+  const [sortField, setSortField] = useState<string>("fecha")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc") // Por defecto ordenamos descendente (más recientes primero)
 
   // Modales
@@ -58,6 +60,13 @@ const ReporteTable: React.FC = () => {
   const handleShowDetalle = () => setShowDetalleModal(true)
   const handleCloseDetalle = () => setShowDetalleModal(false)
 
+  useEffect(() => {
+    // Obtener el usuario actual al cargar el componente
+    const user = getCurrentUser()
+    setCurrentUser(user)
+    loadReportes()
+  }, [])
+
   const loadReportes = async () => {
     try {
       setLoading(true)
@@ -71,7 +80,11 @@ const ReporteTable: React.FC = () => {
       })
 
       const data = await getReporte()
-      setReportes(data)
+      // Ordenar los reportes por fecha (más recientes primero)
+      const sortedData = data.sort((a: any, b: any) => {
+        return new Date(b.fecha_hora_inicio).getTime() - new Date(a.fecha_hora_inicio).getTime()
+      })
+      setReportes(sortedData)
     } catch (error) {
       setError("Error al cargar el listado de reportes")
       console.error(error)
@@ -85,10 +98,6 @@ const ReporteTable: React.FC = () => {
       Swal.close()
     }
   }
-
-  useEffect(() => {
-    loadReportes()
-  }, [])
 
   const handleSort = (field: string) => {
     // Si hacemos clic en el mismo campo, invertimos la dirección
@@ -129,7 +138,7 @@ const ReporteTable: React.FC = () => {
         ? format(new Date(reporte.fecha_hora_fin), "yyyy-MM-dd HH:mm:ss").toLowerCase()
         : ""
       const duracionStr = reporte?.duracion_incidente?.toLowerCase() || ""
-      const proveedorStr = reporte?.farmacia?.proveedor?.nombre?.toLowerCase() || ""
+      const proveedorStr = reporte?.farmacia?.proveedorInternet?.nombre?.toLowerCase() || ""
       const motivoStr = reporte?.motivo?.motivo?.toLowerCase() || ""
       const estadoStr = reporte?.estado?.toLowerCase() || ""
 
@@ -176,8 +185,8 @@ const ReporteTable: React.FC = () => {
           valueB = b.duracion_incidente?.toLowerCase() || ""
           break
         case "proveedor":
-          valueA = a.farmacia?.proveedor?.nombre?.toLowerCase() || ""
-          valueB = b.farmacia?.proveedor?.nombre?.toLowerCase() || ""
+          valueA = a.farmacia?.proveedorInternet?.nombre?.toLowerCase() || ""
+          valueB = b.farmacia?.proveedorInternet?.nombre?.toLowerCase() || ""
           break
         case "motivo":
           valueA = a.motivo?.motivo?.toLowerCase() || ""
@@ -258,8 +267,8 @@ const ReporteTable: React.FC = () => {
         : "",
       "Fecha/Hora Fin": reporte.fecha_hora_fin ? format(new Date(reporte.fecha_hora_fin), "yyyy-MM-dd HH:mm:ss") : "",
       Duración: reporte.duracion_incidente || "",
-      Proveedor: reporte.farmacia?.proveedor?.nombre || "",
-      "NIT Proveedor": reporte.farmacia?.proveedor?.nit || "",
+      Proveedor: reporte.farmacia?.proveedorInternet?.nombre || "",
+      "NIT Proveedor": reporte.farmacia?.proveedorInternet?.nit || "",
       Motivo: reporte.motivo?.motivo || "",
       Estado: reporte.estado || "",
       Observación: reporte.observacion || "",
@@ -294,6 +303,9 @@ const ReporteTable: React.FC = () => {
     }
   }
 
+  // Verificar si el usuario es administrador (roleId 1)
+  const isAdmin = currentUser?.roleId === 1
+
   if (loading && reportes.length === 0) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
@@ -319,7 +331,7 @@ const ReporteTable: React.FC = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FormularioCrearR />
+          <FormularioCrearR onSuccess={handleClose} />
         </Modal.Body>
       </Modal>
 
@@ -356,7 +368,10 @@ const ReporteTable: React.FC = () => {
           {selectedReporteId && (
             <FormularioEnvioM
               farmacia={reportes.find((r) => r.id === selectedReporteId)?.farmacia}
-              onClose={handleCloseEnvio}
+              onClose={() => {
+                handleCloseEnvio()
+                loadReportes()
+              }}
             />
           )}
         </Modal.Body>
@@ -467,11 +482,10 @@ const ReporteTable: React.FC = () => {
                               <tr>
                                 <th>Proveedor</th>
                                 <td>
-                                  {reportes.find((r) => r.id === selectedReporteId)?.farmacia?.proveedor?.nombre}
-                                  <br />
-                                  <small className="text-muted">
-                                    NIT: {reportes.find((r) => r.id === selectedReporteId)?.farmacia?.proveedor?.nit}
-                                  </small>
+                                  {
+                                    reportes.find((r) => r.id === selectedReporteId)?.farmacia?.proveedorInternet
+                                      ?.nombre
+                                  }
                                 </td>
                               </tr>
                               <tr>
@@ -706,7 +720,7 @@ const ReporteTable: React.FC = () => {
                       </div>
                     </td>
                     <td>
-                      <div>{reporte.farmacia.nombre}</div>
+                      <div>{reporte.farmacia?.nombre}</div>
                     </td>
                     <td>
                       <div>{formatFecha(reporte.fecha_hora_inicio)}</div>
@@ -724,8 +738,7 @@ const ReporteTable: React.FC = () => {
                     </td>
                     <td>{reporte.duracion_incidente || "N/A"}</td>
                     <td>
-                      <div>{reporte.farmacia.proveedor.nombre}</div>
-                      <small className="text-muted">NIT: {reporte.farmacia.proveedor.nit}</small>
+                      <div>{reporte.farmacia?.proveedorInternet?.nombre}</div>
                     </td>
                     <td>{reporte.motivo?.motivo || "Sin motivo"}</td>
                     <td>
@@ -787,14 +800,17 @@ const ReporteTable: React.FC = () => {
                             <path d="M8.5 6.5a8 8 0 0 1 13 0" />
                           </svg>
                         </button>
-                        <button
-                          title="Eliminar reporte"
-                          className="btn btn-light btn-sm"
-                          style={{ backgroundColor: "#dc3545", color: "#fff", borderColor: "#dc3545" }}
-                          onClick={() => handleDeleteReporte(reporte.id)}
-                        >
-                          <i className="bi bi-trash"></i>
-                        </button>
+                        {/* Solo mostrar el botón de eliminar para administradores */}
+                        {isAdmin && (
+                          <button
+                            title="Eliminar reporte"
+                            className="btn btn-light btn-sm"
+                            style={{ backgroundColor: "#dc3545", color: "#fff", borderColor: "#dc3545" }}
+                            onClick={() => handleDeleteReporte(reporte.id)}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

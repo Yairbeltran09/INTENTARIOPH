@@ -9,6 +9,7 @@ import { getEnvios, deleteEnvio } from "../../servicios/EnvioModemService"
 import { format } from "date-fns"
 import { Download } from "react-bootstrap-icons"
 import * as XLSX from "xlsx"
+import { getCurrentUser } from "../../servicios/authServices"
 
 interface IEnvio {
   id: number
@@ -16,7 +17,13 @@ interface IEnvio {
     id: number
     nombre: string
   }
-  modem: {
+  modemPrincipal: {
+    id: number
+    marca: string
+    modelo: string
+    numero_serie: string
+  }
+  modemSecundario?: {
     id: number
     marca: string
     modelo: string
@@ -33,6 +40,7 @@ const EnviosTable: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
+  const [currentUser, setCurrentUser] = useState<any>(null)
 
   // Filtros
   const [filterFarmacia, setFilterFarmacia] = useState<string>("")
@@ -45,6 +53,9 @@ const EnviosTable: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
 
   useEffect(() => {
+    // Obtener el usuario actual al cargar el componente
+    const user = getCurrentUser()
+    setCurrentUser(user)
     loadEnvios()
   }, [])
 
@@ -104,8 +115,8 @@ const EnviosTable: React.FC = () => {
           valueB = b.farmacia?.nombre?.toLowerCase() || ""
           break
         case "modem":
-          valueA = a.modem?.numero_serie?.toLowerCase() || ""
-          valueB = b.modem?.numero_serie?.toLowerCase() || ""
+          valueA = a.modemPrincipal?.numero_serie?.toLowerCase() || ""
+          valueB = b.modemPrincipal?.numero_serie?.toLowerCase() || ""
           break
         case "fecha":
           valueA = new Date(a.fecha_envio || 0).getTime()
@@ -135,7 +146,7 @@ const EnviosTable: React.FC = () => {
 
   const filteredEnvios = envios.filter((envio) => {
     const matchFarmacia = (envio?.farmacia?.nombre || "").toLowerCase().includes(filterFarmacia.toLowerCase())
-    const matchModem = (envio?.modem?.numero_serie || "").toLowerCase().includes(filterModem.toLowerCase())
+    const matchModem = (envio?.modemPrincipal?.numero_serie || "").toLowerCase().includes(filterModem.toLowerCase())
     const matchFecha = envio?.fecha_envio
       ? format(new Date(envio.fecha_envio), "yyyy-MM-dd").includes(filterFecha)
       : true
@@ -173,7 +184,7 @@ const EnviosTable: React.FC = () => {
 
       if (result.isConfirmed) {
         await deleteEnvio(id)
-        setEnvios(envios.filter((envio) => envio.id !== id))
+        await loadEnvios()
 
         Swal.fire("¡Eliminado!", "El envío ha sido eliminado.", "success")
       }
@@ -192,9 +203,9 @@ const EnviosTable: React.FC = () => {
     const dataToExport = filteredEnvios.map((envio) => ({
       ID: envio.id,
       Farmacia: envio.farmacia?.nombre || "",
-      "Módem Marca": envio.modem?.marca || "",
-      "Módem Modelo": envio.modem?.modelo || "",
-      "Número Serie": envio.modem?.numero_serie || "",
+      "Módem Marca": envio.modemPrincipal?.marca || "",
+      "Módem Modelo": envio.modemPrincipal?.modelo || "",
+      "Número Serie": envio.modemPrincipal?.numero_serie || "",
       "Fecha Envío": envio.fecha_envio ? format(new Date(envio.fecha_envio), "dd/MM/yyyy") : "",
       "Costo Envío": envio.costo_envio || 0,
       Estado: envio.estado_envio || "",
@@ -210,6 +221,9 @@ const EnviosTable: React.FC = () => {
     // Guardar el archivo
     XLSX.writeFile(wb, `envios_${format(new Date(), "yyyyMMdd")}.xlsx`)
   }
+
+  // Verificar si el usuario es administrador (roleId 1)
+  const isAdmin = currentUser?.roleId === 1
 
   if (loading && envios.length === 0) {
     return (
@@ -227,18 +241,36 @@ const EnviosTable: React.FC = () => {
 
   return (
     <>
-      <div className="p-2" style={{ backgroundColor: "#ffff" }}>
-        <Row className="mb-3">
-          <Col md={6}>
-            <h4 className="mb-3">Listado de Envíos</h4>
-          </Col>
-          <Col md={6} className="text-end">
-            <Button onClick={exportToExcel} variant="success" size="sm" className="me-2">
-              <Download className="me-1" /> Exportar a Excel
-            </Button>
-            <Link to="/CrearEnvio" className="btn btn-sm" style={{ backgroundColor: "#ffb361", color: "#fff" }}>
-              <i className="bi bi-plus-circle me-1"></i> Nuevo Envío
-            </Link>
+      <div className="d-flex align-items-center mb-3" style={{ color: "black" }}>
+        <div className="pagetitle">
+          <h1>Envíos de Módems</h1>
+          <nav>
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">Inicio</li>
+              <li className="breadcrumb-item active">Envíos</li>
+            </ol>
+          </nav>
+        </div>
+        <div className="ms-auto">
+          <Button title="Exportar a Excel" onClick={exportToExcel} className="btn me-2" variant="success">
+            <Download className="me-1" /> Exportar
+          </Button>
+          <Link
+            to="/CrearEnvio"
+            className="btn"
+            style={{ backgroundColor: "#f6952c", borderColor: "#f6952c", color: "#fff" }}
+          >
+            <i className="bi bi-plus-circle-fill me-2"></i> Nuevo Envío
+          </Link>
+        </div>
+      </div>
+
+      <div className="p-2" style={{ backgroundColor: "#ffff", borderRadius: "0.6rem" }}>
+        <Row className="mb-2">
+          <Col>
+            <small className="text-muted">
+              Mostrando {currentEnvios.length} de {filteredEnvios.length} envíos
+            </small>
           </Col>
         </Row>
 
@@ -320,9 +352,9 @@ const EnviosTable: React.FC = () => {
                     </td>
                     <td>
                       <div>
-                        {envio?.modem?.marca} - {envio?.modem?.modelo}
+                        {envio?.modemPrincipal?.marca} - {envio?.modemPrincipal?.modelo}
                       </div>
-                      <small className="text-muted">Serie: {envio?.modem?.numero_serie}</small>
+                      <small className="text-muted">Serie: {envio?.modemPrincipal?.numero_serie}</small>
                     </td>
                     <td>{envio?.fecha_envio ? format(new Date(envio.fecha_envio), "dd/MM/yyyy") : "N/A"}</td>
                     <td>${envio?.costo_envio?.toLocaleString("es-CO") ?? ""}</td>
@@ -347,13 +379,16 @@ const EnviosTable: React.FC = () => {
                         >
                           <i className="bi bi-pencil"></i>
                         </Link>
-                        <button
-                          onClick={() => handleDelete(envio?.id)}
-                          className="btn btn-light btn-sm"
-                          style={{ backgroundColor: "#dc3545", color: "#fff", borderColor: "#dc3545" }}
-                        >
-                          <i className="bi bi-trash"></i>
-                        </button>
+                        {/* Solo mostrar el botón de eliminar para administradores */}
+                        {isAdmin && (
+                          <button
+                            onClick={() => handleDelete(envio?.id)}
+                            className="btn btn-light btn-sm"
+                            style={{ backgroundColor: "#dc3545", color: "#fff", borderColor: "#dc3545" }}
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -363,7 +398,14 @@ const EnviosTable: React.FC = () => {
           </table>
         </div>
       </div>
-      <Card.Footer style={{ display: "flex", justifyContent: "space-between", backgroundColor: "#ffff" }}>
+      <Card.Footer
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          backgroundColor: "#ffff",
+          borderRadius: "0 0 0.6rem 0.6rem",
+        }}
+      >
         <div>
           <small className="text-muted">
             Mostrando {currentEnvios.length} de {filteredEnvios.length} envíos

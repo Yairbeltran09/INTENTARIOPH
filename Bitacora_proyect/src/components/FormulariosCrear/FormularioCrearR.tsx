@@ -2,106 +2,42 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Row, Col, Form, Button, Spinner, Card } from "react-bootstrap"
+import { Row, Col, Form, Button, Spinner } from "react-bootstrap"
 import Swal from "sweetalert2"
-import { getReporteById, updateReporte } from "../../servicios/reportesService"
+import { createReporte } from "../../servicios/reportesService"
+import { getFarmacias } from "../../servicios/farmaciaService"
+import { getMotivos } from "../../servicios/motivoreporteService"
 
-interface IFormularioEditarRProps {
-  reporteId: number
-  onClose: () => void
-  onSuccess: () => void
+interface IFormularioCrearRProps {
+  onSuccess?: () => void
 }
 
-const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClose, onSuccess }) => {
-  const [loading, setLoading] = useState(true)
-  const [reporte, setReporte] = useState<any>({
-    id: "",
-    fecha: "",
-    farmacia: {
-      id: 0,
-      nombre: "",
-      coordenadas: "",
-      direccion: "",
-      ciudad: { nombre_ciudad: "" },
-      departamento: { name_departamento: "" },
-      proveedorInternet: { nombre: "" },
-      canalTransmision: { nombre: "" },
-    },
-    fecha_hora_inicio: "",
-    fecha_hora_fin: "",
-    fecha_cierre: "", // Nueva propiedad para fecha de cierre
-    duracion_incidente: "",
-    motivo: { id: 0, motivo: "" },
-    estado: "",
-    observacion: "",
-    comentarios: [], // Array para almacenar comentarios
-  })
-  const [error, setError] = useState<string | null>(null)
+const FormularioCrearR: React.FC<IFormularioCrearRProps> = ({ onSuccess }) => {
+  const [loading, setLoading] = useState(false)
+  const [loadingData, setLoadingData] = useState(true)
+  const [farmacias, setFarmacias] = useState<any[]>([])
+  const [motivos, setMotivos] = useState<any[]>([])
   const [isHovered, setIsHovered] = useState(false)
   const [isHovered2, setIsHovered2] = useState(false)
-  const [duracionCalculada, setDuracionCalculada] = useState("")
-  const [nuevoComentario, setNuevoComentario] = useState("")
 
-  // Función para formatear fechas y horas
-  const formatearFecha = (fechaISO: string | null | undefined): string => {
-    if (!fechaISO) return ""
-    try {
-      const fecha = new Date(fechaISO)
-      return fecha.toISOString().split("T")[0]
-    } catch (error) {
-      console.error("Error al formatear fecha:", error)
-      return ""
-    }
-  }
-
-  const formatearHora = (fechaISO: string | null | undefined): string => {
-    if (!fechaISO) return ""
-    try {
-      const fecha = new Date(fechaISO)
-      return `${String(fecha.getHours()).padStart(2, "0")}:${String(fecha.getMinutes()).padStart(2, "0")}`
-    } catch (error) {
-      console.error("Error al formatear hora:", error)
-      return ""
-    }
-  }
-
-  // Calcular duración cuando cambian las horas
-  useEffect(() => {
-    if (reporte.fecha_hora_inicio && reporte.fecha_hora_fin) {
-      try {
-        const inicio = new Date(reporte.fecha + "T" + reporte.fecha_hora_inicio)
-        const fin = new Date(reporte.fecha_cierre || reporte.fecha + "T" + reporte.fecha_hora_fin)
-
-        if (fin > inicio) {
-          const diffMs = fin.getTime() - inicio.getTime()
-          const diffHrs = Math.floor(diffMs / 3600000)
-          const diffMins = Math.floor((diffMs % 3600000) / 60000)
-
-          setDuracionCalculada(`${diffHrs}h ${diffMins}m`)
-        } else {
-          setDuracionCalculada("Hora fin debe ser posterior a hora inicio")
-        }
-      } catch (error) {
-        console.error("Error al calcular duración:", error)
-        setDuracionCalculada("")
-      }
-    } else {
-      setDuracionCalculada("")
-    }
-  }, [reporte.fecha_hora_inicio, reporte.fecha_hora_fin, reporte.fecha, reporte.fecha_cierre])
+  const [reporte, setReporte] = useState<any>({
+    fecha: new Date().toISOString().split("T")[0],
+    farmacia: null,
+    fecha_hora_inicio: new Date().toTimeString().slice(0, 5),
+    fecha_hora_fin: "",
+    duracion_incidente: "",
+    estado: "ABIERTO",
+    motivo: null,
+    observacion: "",
+  })
 
   useEffect(() => {
-    const cargarReporte = async () => {
+    const cargarDatos = async () => {
       try {
-        setLoading(true)
-        setError(null)
-
-        if (!reporteId) {
-          throw new Error("ID no proporcionado")
-        }
+        setLoadingData(true)
 
         Swal.fire({
-          title: "Cargando reporte...",
+          title: "Cargando datos...",
           html: "Por favor espera un momento.",
           allowOutsideClick: false,
           didOpen: () => {
@@ -109,75 +45,59 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
           },
         })
 
-        const data = await getReporteById(reporteId)
+        // Cargar farmacias y motivos en paralelo
+        const [farmaciasData, motivosData] = await Promise.all([getFarmacias(), getMotivos()])
 
-        if (!data) {
-          throw new Error("No se encontró el reporte")
-        }
+        setFarmacias(farmaciasData)
+        setMotivos(motivosData)
 
-        // Formatear las fechas y horas antes de establecer el estado
-        const reporteFormateado = {
-          ...data,
-          fecha: formatearFecha(data.fecha),
-          fecha_cierre: formatearFecha(data.fecha_cierre) || formatearFecha(data.fecha), // Usar fecha de apertura como default
-          fecha_hora_inicio: formatearHora(data.fecha_hora_inicio),
-          fecha_hora_fin: formatearHora(data.fecha_hora_fin),
-          comentarios: data.comentarios || [], // Asegurarse de que comentarios sea un array
-        }
-
-        setReporte(reporteFormateado)
+        Swal.close()
       } catch (error) {
-        console.error("Error al cargar el reporte:", error)
-        setError(error instanceof Error ? error.message : "Error al cargar el reporte")
+        console.error("Error al cargar datos:", error)
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "No se pudo cargar la información del reporte",
+          text: "No se pudieron cargar los datos necesarios para crear el reporte",
         })
       } finally {
-        setLoading(false)
-        Swal.close()
+        setLoadingData(false)
       }
     }
 
-    cargarReporte()
-  }, [reporteId])
+    cargarDatos()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setReporte((prev: any) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
 
-  const handleAgregarComentario = () => {
-    if (!nuevoComentario.trim()) return
-
-    const ahora = new Date()
-    const comentario = {
-      id: Date.now(), // ID temporal
-      texto: nuevoComentario,
-      fecha: ahora.toISOString(),
-      usuario: "Usuario Actual", // Idealmente esto vendría de un contexto de autenticación
+    if (name === "farmacia_id") {
+      const farmaciaSeleccionada = farmacias.find((f) => f.id === Number(value))
+      setReporte((prev: any) => ({
+        ...prev,
+        farmacia: farmaciaSeleccionada,
+      }))
+    } else if (name === "motivo_id") {
+      const motivoSeleccionado = motivos.find((m) => m.id === Number(value))
+      setReporte((prev: any) => ({
+        ...prev,
+        motivo: motivoSeleccionado,
+      }))
+    } else {
+      setReporte((prev: any) => ({
+        ...prev,
+        [name]: value,
+      }))
     }
-
-    setReporte((prev: any) => ({
-      ...prev,
-      comentarios: [...prev.comentarios, comentario],
-    }))
-
-    setNuevoComentario("")
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!reporte.fecha || !reporte.fecha_hora_inicio) {
+    if (!reporte.farmacia || !reporte.motivo) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Por favor complete los campos obligatorios",
+        text: "Por favor seleccione una farmacia y un motivo",
       })
       return
     }
@@ -186,7 +106,7 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
       setLoading(true)
 
       Swal.fire({
-        title: "Actualizando reporte...",
+        title: "Creando reporte...",
         html: "Por favor espera un momento.",
         allowOutsideClick: false,
         didOpen: () => {
@@ -196,7 +116,6 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
 
       // Combinar fecha con hora para crear fechas ISO completas
       const fechaBase = new Date(reporte.fecha)
-      const fechaCierre = new Date(reporte.fecha_cierre || reporte.fecha)
 
       let fechaHoraInicio = null
       if (reporte.fecha && reporte.fecha_hora_inicio) {
@@ -205,58 +124,42 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
         fechaHoraInicio.setHours(Number(horasInicio), Number(minutosInicio), 0, 0)
       }
 
-      let fechaHoraFin = null
-      if (reporte.fecha_cierre && reporte.fecha_hora_fin) {
-        const [horasFin, minutosFin] = reporte.fecha_hora_fin.split(":")
-        fechaHoraFin = new Date(fechaCierre)
-        fechaHoraFin.setHours(Number(horasFin), Number(minutosFin), 0, 0)
-      }
-
       const reporteFormateado = {
         ...reporte,
         fecha: reporte.fecha ? new Date(reporte.fecha).toISOString() : null,
-        fecha_cierre: reporte.fecha_cierre ? new Date(reporte.fecha_cierre).toISOString() : null,
         fecha_hora_inicio: fechaHoraInicio ? fechaHoraInicio.toISOString() : null,
-        fecha_hora_fin: fechaHoraFin ? fechaHoraFin.toISOString() : null,
-        duracion_incidente: duracionCalculada || reporte.duracion_incidente,
       }
 
-      await updateReporte(reporteId, reporteFormateado)
+      await createReporte(reporteFormateado)
 
       await Swal.fire({
         icon: "success",
         title: "¡Éxito!",
-        text: "Reporte actualizado correctamente",
+        text: "Reporte creado correctamente",
       })
 
-      onSuccess()
-      onClose()
+      // Limpiar el formulario o cerrar el modal
+      if (onSuccess) {
+        onSuccess()
+      }
     } catch (error) {
-      console.error("Error al actualizar:", error)
+      console.error("Error al crear:", error)
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo actualizar el reporte",
+        text: "No se pudo crear el reporte",
       })
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading) {
+  if (loadingData) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "200px" }}>
         <Spinner animation="border" role="status">
           <span className="visually-hidden">Cargando...</span>
         </Spinner>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        {error}
       </div>
     )
   }
@@ -267,7 +170,7 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
         <Row className="mb-4">
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Fecha de Apertura*</Form.Label>
+              <Form.Label>Fecha*</Form.Label>
               <Form.Control type="date" name="fecha" value={reporte.fecha} onChange={handleInputChange} required />
             </Form.Group>
           </Col>
@@ -285,56 +188,31 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
           </Col>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Fecha de Cierre {reporte.estado === "CERRADO" && "*"}</Form.Label>
-              <Form.Control
-                type="date"
-                name="fecha_cierre"
-                value={reporte.fecha_cierre}
-                onChange={handleInputChange}
-                required={reporte.estado === "CERRADO"}
-              />
-              {reporte.fecha_cierre && reporte.fecha_cierre !== reporte.fecha && (
-                <Form.Text className="text-muted">La fecha de cierre es diferente a la fecha de apertura</Form.Text>
-              )}
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Hora Fin {reporte.estado === "CERRADO" && "*"}</Form.Label>
-              <Form.Control
-                type="time"
-                name="fecha_hora_fin"
-                value={reporte.fecha_hora_fin}
-                onChange={handleInputChange}
-                required={reporte.estado === "CERRADO"}
-              />
-              {duracionCalculada && (
-                <Form.Text className="text-muted">Duración calculada: {duracionCalculada}</Form.Text>
-              )}
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Estado*</Form.Label>
-              <Form.Select name="estado" value={reporte.estado} onChange={handleInputChange} required>
-                <option value="">Seleccione...</option>
-                <option value="ABIERTO">ABIERTO</option>
-                <option value="CERRADO">CERRADO</option>
+              <Form.Label>Farmacia*</Form.Label>
+              <Form.Select name="farmacia_id" value={reporte.farmacia?.id || ""} onChange={handleInputChange} required>
+                <option value="">Seleccione una farmacia...</option>
+                {farmacias.map((farmacia) => (
+                  <option key={farmacia.id} value={farmacia.id}>
+                    {farmacia.nombre}
+                  </option>
+                ))}
               </Form.Select>
-              {reporte.estado === "CERRADO" && (
-                <Form.Text className="text-muted">
-                  Al cerrar un caso, asegúrese de completar la fecha y hora de fin
-                </Form.Text>
-              )}
             </Form.Group>
           </Col>
           <Col md={6}>
             <Form.Group className="mb-3">
               <Form.Label>Motivo*</Form.Label>
-              <Form.Control type="text" value={reporte.motivo?.motivo || ""} disabled readOnly className="bg-light" />
+              <Form.Select name="motivo_id" value={reporte.motivo?.id || ""} onChange={handleInputChange} required>
+                <option value="">Seleccione un motivo...</option>
+                {motivos.map((motivo) => (
+                  <option key={motivo.id} value={motivo.id}>
+                    {motivo.motivo}
+                  </option>
+                ))}
+              </Form.Select>
             </Form.Group>
           </Col>
-          <Col>
+          <Col md={12}>
             <Form.Group className="mb-4">
               <Form.Label>Observaciones</Form.Label>
               <Form.Control
@@ -349,112 +227,61 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
           </Col>
         </Row>
 
-        <Card className="mb-4">
-          <Card.Header>
-            <h5 className="mb-0">Información de la Farmacia</h5>
-          </Card.Header>
-          <Card.Body>
+        {reporte.farmacia && (
+          <div className="mb-4">
+            <h5 className="mb-3">Información de la Farmacia Seleccionada</h5>
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Nombre de la Farmacia</Form.Label>
-                  <Form.Control type="text" value={reporte.farmacia?.nombre || ""} disabled />
+                  <Form.Label>Nombre</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={reporte.farmacia?.nombre || ""}
+                    disabled
+                    readOnly
+                    className="bg-light"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Coordenadas</Form.Label>
-                  <Form.Control type="text" value={reporte.farmacia?.coordenadas || ""} disabled />
-                </Form.Group>
-              </Col>
-              <Col md={12}>
-                <Form.Group className="mb-3">
                   <Form.Label>Dirección</Form.Label>
-                  <Form.Control type="text" value={reporte.farmacia?.direccion || ""} disabled />
+                  <Form.Control
+                    type="text"
+                    value={reporte.farmacia?.direccion || ""}
+                    disabled
+                    readOnly
+                    className="bg-light"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Ciudad</Form.Label>
-                  <Form.Control type="text" value={reporte.farmacia?.ciudad?.nombre_ciudad || ""} disabled />
+                  <Form.Control
+                    type="text"
+                    value={reporte.farmacia?.ciudad?.nombre_ciudad || ""}
+                    disabled
+                    readOnly
+                    className="bg-light"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Proveedor de Internet</Form.Label>
-                  <Form.Control type="text" value={reporte.farmacia?.proveedorInternet?.nombre || ""} disabled />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Canal de Transmisión</Form.Label>
-                  <Form.Control type="text" value={reporte.farmacia?.canalTransmision?.nombre || ""} disabled />
+                  <Form.Control
+                    type="text"
+                    value={reporte.farmacia?.proveedorInternet?.nombre || ""}
+                    disabled
+                    readOnly
+                    className="bg-light"
+                  />
                 </Form.Group>
               </Col>
             </Row>
-          </Card.Body>
-        </Card>
-
-        {/* Sección de comentarios/actualizaciones */}
-        <Card className="mb-4">
-          <Card.Header className="d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">Seguimiento del Caso</h5>
-            <span className="badge bg-secondary">{reporte.comentarios.length} actualizaciones</span>
-          </Card.Header>
-          <Card.Body>
-            <div className="mb-3">
-              <Form.Group>
-                <Form.Label>Agregar actualización</Form.Label>
-                <div className="d-flex">
-                  <Form.Control
-                    as="textarea"
-                    rows={2}
-                    value={nuevoComentario}
-                    onChange={(e) => setNuevoComentario(e.target.value)}
-                    placeholder="Escriba una actualización sobre el estado del caso..."
-                  />
-                  <Button
-                    className="ms-2"
-                    style={{ backgroundColor: "#f6952c", borderColor: "#f6952c" }}
-                    onClick={handleAgregarComentario}
-                    disabled={!nuevoComentario.trim()}
-                  >
-                    <i className="bi bi-plus-lg"></i>
-                  </Button>
-                </div>
-              </Form.Group>
-            </div>
-
-            <div
-              className="comentarios-container"
-              style={{ maxHeight: "300px", overflowY: "auto", border: "1px solid #dee2e6", borderRadius: "0.25rem" }}
-            >
-              {reporte.comentarios.length === 0 ? (
-                <div className="text-center p-3 text-muted">No hay actualizaciones registradas</div>
-              ) : (
-                <div className="list-group list-group-flush">
-                  {reporte.comentarios
-                    .slice()
-                    .reverse()
-                    .map((comentario: any) => (
-                      <div key={comentario.id} className="list-group-item">
-                        <div className="d-flex justify-content-between align-items-center mb-1">
-                          <small className="text-primary">{comentario.usuario}</small>
-                          <small className="text-muted">
-                            {new Date(comentario.fecha).toLocaleString("es-CO", {
-                              dateStyle: "medium",
-                              timeStyle: "short",
-                            })}
-                          </small>
-                        </div>
-                        <p className="mb-0">{comentario.texto}</p>
-                      </div>
-                    ))}
-                </div>
-              )}
-            </div>
-          </Card.Body>
-        </Card>
+          </div>
+        )}
 
         <div className="text-center mt-4">
           <Button
@@ -475,12 +302,12 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
             {loading ? (
               <>
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
-                Actualizando...
+                Creando...
               </>
             ) : (
               <>
-                <i className="bi bi-check-circle me-2"></i>
-                Actualizar
+                <i className="bi bi-plus-circle me-2"></i>
+                Crear Reporte
               </>
             )}
           </Button>
@@ -494,7 +321,9 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              if (onSuccess) onSuccess()
+            }}
             disabled={loading}
           >
             <i className="bi bi-x-circle me-2"></i>
@@ -506,4 +335,4 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
   )
 }
 
-export default FormularioEditarR
+export default FormularioCrearR
