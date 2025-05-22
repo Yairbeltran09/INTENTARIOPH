@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Row, Col, Form, Button, Spinner, Card } from "react-bootstrap"
+import { Row, Col, Form, Button, Spinner, Card, Alert } from "react-bootstrap"
 import Swal from "sweetalert2"
 import { getReporteById, updateReporte } from "../../servicios/reportesService"
 
@@ -14,24 +14,20 @@ interface IFormularioEditarRProps {
 
 const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(true)
+  const [reporteOriginal, setReporteOriginal] = useState<any>(null)
   const [reporte, setReporte] = useState<any>({
     id: "",
     fecha: "",
-    fecha_cierre: "", // Restaurado el campo fecha_cierre
+    fecha_cierre: "",
     farmacia: {
       id: 0,
-      nombre: "",
-      coordenadas: "",
-      direccion: "",
-      ciudad: { nombre_ciudad: "" },
-      departamento: { name_departamento: "" },
-      proveedorInternet: { nombre: "" },
-      canalTransmision: { nombre: "" },
     },
     fecha_hora_inicio: "",
     fecha_hora_fin: "",
     duracion_incidente: "",
-    motivo: { id: 0, motivo: "" },
+    motivo: {
+      id: 0,
+    },
     estado: "",
     observacion: "",
   })
@@ -39,6 +35,8 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
   const [isHovered, setIsHovered] = useState(false)
   const [isHovered2, setIsHovered2] = useState(false)
   const [duracionCalculada, setDuracionCalculada] = useState("")
+  const [fechaInconsistente, setFechaInconsistente] = useState(false)
+  const [estadoOriginal, setEstadoOriginal] = useState("")
 
   // Función para formatear fechas y horas
   const formatearFecha = (fechaISO: string | null | undefined): string => {
@@ -63,13 +61,13 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
     }
   }
 
-  // Calcular duración cuando cambian las horas
+  // Calcular duración cuando cambian las horas o fechas
   useEffect(() => {
-    if (reporte.fecha_hora_inicio && reporte.fecha_hora_fin) {
+    if (reporte.fecha_hora_inicio && reporte.fecha_hora_fin && reporte.fecha && reporte.fecha_cierre) {
       try {
         // Crear objetos Date para inicio y fin
         const fechaInicio = new Date(reporte.fecha)
-        const fechaFin = new Date(reporte.fecha_cierre || reporte.fecha)
+        const fechaFin = new Date(reporte.fecha_cierre)
 
         // Extraer horas y minutos
         const [horasInicio, minutosInicio] = reporte.fecha_hora_inicio.split(":").map(Number)
@@ -82,11 +80,29 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
         // Calcular diferencia en milisegundos
         const diffMs = fechaFin.getTime() - fechaInicio.getTime()
 
-        // Convertir a horas y minutos
-        const diffHrs = Math.floor(diffMs / 3600000)
-        const diffMins = Math.floor((diffMs % 3600000) / 60000)
+        // Si la duración es negativa, mostrar error
+        if (diffMs < 0) {
+          setDuracionCalculada("Error: La fecha y hora de fin debe ser posterior a la fecha y hora de inicio")
+          return
+        }
 
-        setDuracionCalculada(`${diffHrs}h ${diffMins}m`)
+        // Convertir a días, horas y minutos
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+        const diffHrs = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+
+        // Formatear la duración
+        let duracion = ""
+        if (diffDays > 0) {
+          duracion += `${diffDays}d `
+        }
+        duracion += `${diffHrs}h ${diffMins}m`
+
+        // Calcular el total de horas para mostrar también
+        const totalHours = Math.floor(diffMs / (1000 * 60 * 60))
+        const totalMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+
+        setDuracionCalculada(`${duracion} (Total: ${totalHours}h ${totalMinutes}m)`)
       } catch (error) {
         console.error("Error al calcular duración:", error)
         setDuracionCalculada("")
@@ -119,6 +135,19 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
 
         if (!data) {
           throw new Error("No se encontró el reporte")
+        }
+
+        // Guardar el reporte original y su estado
+        setReporteOriginal(data)
+        setEstadoOriginal(data.estado)
+
+        // Verificar si hay inconsistencia entre fecha y fecha_hora_inicio
+        const fechaReporte = new Date(data.fecha)
+        const fechaHoraInicio = new Date(data.fecha_hora_inicio)
+
+        if (fechaReporte.toISOString().split("T")[0] !== fechaHoraInicio.toISOString().split("T")[0]) {
+          setFechaInconsistente(true)
+          console.warn("Inconsistencia detectada: La fecha del reporte no coincide con la fecha de fecha_hora_inicio")
         }
 
         // Formatear las fechas y horas antes de establecer el estado
@@ -168,6 +197,42 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
       return
     }
 
+    // Validar que la fecha y hora fin sean posteriores a la fecha y hora inicio si el estado es CERRADO
+    if (reporte.estado === "CERRADO") {
+      if (!reporte.fecha_hora_fin || !reporte.fecha_cierre) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Por favor ingrese la fecha y hora de fin para cerrar el reporte",
+        })
+        return
+      }
+
+      // Si hay inconsistencia en las fechas, mostrar una advertencia pero permitir continuar
+      if (fechaInconsistente && duracionCalculada.includes("Error")) {
+        const result = await Swal.fire({
+          icon: "warning",
+          title: "Advertencia",
+          text: "Hay una inconsistencia en las fechas. ¿Desea continuar de todos modos?",
+          showCancelButton: true,
+          confirmButtonText: "Sí, continuar",
+          cancelButtonText: "No, revisar",
+        })
+
+        if (!result.isConfirmed) {
+          return
+        }
+      } else if (duracionCalculada.includes("Error")) {
+        // Si no hay inconsistencia pero la duración es negativa, mostrar error
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "La fecha y hora de fin debe ser posterior a la fecha y hora de inicio",
+        })
+        return
+      }
+    }
+
     try {
       setLoading(true)
 
@@ -180,48 +245,23 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
         },
       })
 
-      // Preparar los datos para enviar al backend
-      const reporteParaEnviar: {
-        id: any
-        fecha: string | null
-        fecha_cierre: string | null
-        farmacia: any
-        motivo: any
-        estado: any
-        observacion: any
-        duracion_incidente: any
-        fecha_hora_inicio?: string | null
-        fecha_hora_fin?: string | null
-      } = {
-        id: reporte.id,
-        fecha: reporte.fecha ? new Date(reporte.fecha).toISOString() : null,
-        fecha_cierre: reporte.fecha_cierre ? new Date(reporte.fecha_cierre).toISOString() : null,
-        farmacia: reporte.farmacia,
-        motivo: reporte.motivo,
+      // Crear un objeto con los campos que queremos actualizar
+      const cambios = {
         estado: reporte.estado,
         observacion: reporte.observacion,
-        duracion_incidente: duracionCalculada || reporte.duracion_incidente,
       }
 
-      // Combinar fecha con hora para crear fechas ISO completas
-      if (reporte.fecha && reporte.fecha_hora_inicio) {
-        const [horasInicio, minutosInicio] = reporte.fecha_hora_inicio.split(":")
-        const fechaHoraInicio = new Date(reporte.fecha)
-        fechaHoraInicio.setHours(Number(horasInicio), Number(minutosInicio), 0, 0)
-        reporteParaEnviar.fecha_hora_inicio = fechaHoraInicio.toISOString()
-      }
-
-      if (reporte.fecha_cierre && reporte.fecha_hora_fin) {
-        const [horasFin, minutosFin] = reporte.fecha_hora_fin.split(":")
-        const fechaHoraFin = new Date(reporte.fecha_cierre)
-        fechaHoraFin.setHours(Number(horasFin), Number(minutosFin), 0, 0)
-        reporteParaEnviar.fecha_hora_fin = fechaHoraFin.toISOString()
+      // Solo si el estado es CERRADO, incluimos fecha y hora de cierre
+      if (reporte.estado === "CERRADO") {
+        cambios.fecha_cierre = reporte.fecha_cierre
+        cambios.hora_fin = reporte.fecha_hora_fin
       }
 
       // Imprimir el objeto para depuración
-      console.log("Enviando reporte:", reporteParaEnviar)
+      console.log("Enviando cambios:", cambios)
+      console.log(`Estado original: ${estadoOriginal}, Nuevo estado: ${reporte.estado}`)
 
-      await updateReporte(reporteId, reporteParaEnviar)
+      await updateReporte(reporteId, cambios)
 
       await Swal.fire({
         icon: "success",
@@ -231,16 +271,18 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
 
       onSuccess()
       onClose()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al actualizar:", error)
-      if (typeof error === "object" && error !== null && "response" in error) {
-        // @ts-expect-error: error.response may exist if error is from axios or similar
+      if (error.response) {
         console.error("Detalles del error:", error.response.data)
       }
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo actualizar el reporte",
+        text:
+          error.message ||
+          "No se pudo actualizar el reporte. Por favor, intente nuevamente o contacte al administrador.",
+        footer: '<a href="#">¿Necesita ayuda?</a>',
       })
     } finally {
       setLoading(false)
@@ -267,12 +309,23 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
 
   return (
     <div className="p-4">
+      {fechaInconsistente && (
+        <Alert variant="warning" className="mb-4">
+          <Alert.Heading>Advertencia: Inconsistencia en fechas</Alert.Heading>
+          <p>
+            Se ha detectado una inconsistencia entre la fecha del reporte y la fecha de inicio. Esto puede causar
+            problemas al calcular la duración. Se recomienda verificar las fechas antes de guardar.
+          </p>
+        </Alert>
+      )}
+
       <Form onSubmit={handleSubmit}>
         <Row className="mb-4">
           <Col md={6}>
             <Form.Group className="mb-3">
               <Form.Label>Fecha de Apertura*</Form.Label>
-              <Form.Control type="date" name="fecha" value={reporte.fecha} onChange={handleInputChange} required />
+              <Form.Control type="date" name="fecha" value={reporte.fecha} onChange={handleInputChange} disabled />
+              <Form.Text className="text-muted">La fecha de apertura no se puede modificar</Form.Text>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -283,8 +336,9 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
                 name="fecha_hora_inicio"
                 value={reporte.fecha_hora_inicio}
                 onChange={handleInputChange}
-                required
+                disabled
               />
+              <Form.Text className="text-muted">La hora de inicio no se puede modificar</Form.Text>
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -296,6 +350,7 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
                 value={reporte.fecha_cierre}
                 onChange={handleInputChange}
                 required={reporte.estado === "CERRADO"}
+                min={reporte.fecha} // La fecha de cierre no puede ser anterior a la fecha de apertura
               />
               {reporte.fecha_cierre && reporte.fecha_cierre !== reporte.fecha && (
                 <Form.Text className="text-muted">La fecha de cierre es diferente a la fecha de apertura</Form.Text>
@@ -313,7 +368,9 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
                 required={reporte.estado === "CERRADO"}
               />
               {duracionCalculada && (
-                <Form.Text className="text-muted">Duración calculada: {duracionCalculada}</Form.Text>
+                <Form.Text className={duracionCalculada.includes("Error") ? "text-danger" : "text-muted"}>
+                  {duracionCalculada}
+                </Form.Text>
               )}
             </Form.Group>
           </Col>
@@ -328,6 +385,11 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
               {reporte.estado === "CERRADO" && (
                 <Form.Text className="text-muted">
                   Al cerrar un caso, asegúrese de completar la fecha y hora de fin
+                </Form.Text>
+              )}
+              {reporte.estado !== estadoOriginal && (
+                <Form.Text className="text-warning">
+                  El estado cambiará de {estadoOriginal} a {reporte.estado}
                 </Form.Text>
               )}
             </Form.Group>

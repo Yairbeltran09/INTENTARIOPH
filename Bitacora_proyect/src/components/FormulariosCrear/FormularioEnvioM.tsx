@@ -59,7 +59,7 @@ const FormularioEnvioM: React.FC<Props> = ({ farmacia, onClose }) => {
         })
 
         const modemsData = await getModems()
-        setModems(modemsData.filter((modem) => modem.estado === "DISPONIBLE"))
+        setModems(modemsData.filter((modem: { estado: string }) => modem.estado === "DISPONIBLE"))
         Swal.close()
       } catch (error) {
         console.error("Error al cargar datos:", error)
