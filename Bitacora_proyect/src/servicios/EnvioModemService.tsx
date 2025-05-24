@@ -55,10 +55,12 @@ export const deleteEnvio = async (id: number) => {
 
 export const getEnvioById = async (id: number) => {
   try {
-    const response = await axios.get(`${API_URL}/${id}`);
-    return response.data;
+    const response = await axios.get(`${API_URL}/${id}`)
+    return response.data
   } catch (error) {
-    console.error('Error fetching envío by id:', error);
-    throw error;
+    console.error(`Error fetching envio with id ${id}:`, error)
+    throw error
   }
 };
+
+

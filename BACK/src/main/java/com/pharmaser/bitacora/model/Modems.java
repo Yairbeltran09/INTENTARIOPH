@@ -1,9 +1,7 @@
 package com.pharmaser.bitacora.model;
 
 import jakarta.persistence.*;
-
 import java.math.BigInteger;
-import java.security.Timestamp;
 
 @Entity
 public class Modems {
@@ -27,6 +25,7 @@ public class Modems {
 
     private Boolean isDeleted = false;
 
+    // Getters y Setters
     public String getEstado() {
         return estado;
     }
@@ -42,7 +41,6 @@ public class Modems {
     public void setFarmacia(Farmacias farmacia) {
         this.farmacia = farmacia;
     }
-
 
     public long getId() {
         return id;
@@ -80,8 +78,9 @@ public class Modems {
         return isDeleted;
     }
 
-    public void setISDeleted(Boolean deleted) {
-        isDeleted = isDeleted;
+    // Corregir el nombre del setter
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
     public BigInteger getNumero() {
@@ -98,5 +97,20 @@ public class Modems {
 
     public void setProveedorInternet(ProveedorInternet proveedorInternet) {
         this.proveedorInternet = proveedorInternet;
+    }
+
+    @Override
+    public String toString() {
+        return "Modems{" +
+                "id=" + id +
+                ", numero_serie='" + numero_serie + '\'' +
+                ", marca='" + marca + '\'' +
+                ", modelo='" + modelo + '\'' +
+                ", estado='" + estado + '\'' +
+                ", numero=" + numero +
+                ", farmacia=" + (farmacia != null ? farmacia.getId() : "null") +
+                ", proveedorInternet=" + (proveedorInternet != null ? proveedorInternet.getId() : "null") +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

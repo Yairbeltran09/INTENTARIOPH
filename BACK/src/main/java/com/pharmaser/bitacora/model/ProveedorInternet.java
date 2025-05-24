@@ -14,9 +14,12 @@ public class ProveedorInternet {
     private Integer nit;
     private String correo;
     private String estado;
-    private Date Fecha_contratacion;
-    private String Observacion;
-    private Boolean isDeleted = false;  // Columna isDeleted
+
+    @Temporal(TemporalType.DATE)
+    private Date fecha_contratacion; // Corregido: usar minúsculas consistentemente
+
+    private String observacion; // Corregido: usar minúsculas consistentemente
+    private Boolean isDeleted = false;
 
     // Getters y Setters
     public Boolean getIsDeleted() {
@@ -27,21 +30,20 @@ public class ProveedorInternet {
         this.isDeleted = isDeleted;
     }
 
-
     public String getObservacion() {
-        return Observacion;
+        return observacion;
     }
 
     public void setObservacion(String observacion) {
-        Observacion = observacion;
+        this.observacion = observacion;
     }
 
     public Date getFecha_contratacion() {
-        return Fecha_contratacion;
+        return fecha_contratacion;
     }
 
     public void setFecha_contratacion(Date fecha_contratacion) {
-        Fecha_contratacion = fecha_contratacion;
+        this.fecha_contratacion = fecha_contratacion;
     }
 
     public Integer getNumero_contacto() {
@@ -98,5 +100,21 @@ public class ProveedorInternet {
 
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    @Override
+    public String toString() {
+        return "ProveedorInternet{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", nombre_contacto='" + nombre_contacto + '\'' +
+                ", numero_contacto=" + numero_contacto +
+                ", nit=" + nit +
+                ", correo='" + correo + '\'' +
+                ", estado='" + estado + '\'' +
+                ", fecha_contratacion=" + fecha_contratacion +
+                ", observacion='" + observacion + '\'' +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

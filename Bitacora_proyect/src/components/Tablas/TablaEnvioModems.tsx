@@ -2,14 +2,14 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Badge, FormControl, Card, Button, Spinner, Row, Col } from "react-bootstrap"
+import { Badge, FormControl, Card, Button, Spinner, Row, Col, Modal } from "react-bootstrap"
 import Swal from "sweetalert2"
-import { Link } from "react-router-dom"
 import { getEnvios, deleteEnvio } from "../../servicios/EnvioModemService"
 import { format } from "date-fns"
 import { Download } from "react-bootstrap-icons"
 import * as XLSX from "xlsx"
 import { getCurrentUser } from "../../servicios/authServices"
+import FormularioEditarEnvio from "../FormulariosEditar.tsx/FormularioEditarEnvioM"
 
 interface IEnvio {
   id: number
@@ -42,6 +42,10 @@ const EnviosTable: React.FC = () => {
   const itemsPerPage = 10
   const [currentUser, setCurrentUser] = useState<any>(null)
 
+  // Modales
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedEnvioId, setSelectedEnvioId] = useState<number | null>(null)
+
   // Filtros
   const [filterFarmacia, setFilterFarmacia] = useState<string>("")
   const [filterModem, setFilterModem] = useState<string>("")
@@ -51,6 +55,17 @@ const EnviosTable: React.FC = () => {
   // Estado para ordenamiento
   const [sortField, setSortField] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+
+  const handleShowEdit = (envioId: number) => {
+    setSelectedEnvioId(envioId)
+    setShowEditModal(true)
+  }
+
+  const handleCloseEdit = () => {
+    setShowEditModal(false)
+    setSelectedEnvioId(null)
+    loadEnvios() // Recargar envíos al cerrar el modal de edición
+  }
 
   useEffect(() => {
     // Obtener el usuario actual al cargar el componente
@@ -102,6 +117,17 @@ const EnviosTable: React.FC = () => {
     return sortDirection === "asc" ? "↑" : "↓"
   }
 
+  const filteredEnvios = envios.filter((envio) => {
+    const matchFarmacia = (envio?.farmacia?.nombre || "").toLowerCase().includes(filterFarmacia.toLowerCase())
+    const matchModem = (envio?.modemPrincipal?.numero_serie || "").toLowerCase().includes(filterModem.toLowerCase())
+    const matchFecha = envio?.fecha_envio
+      ? format(new Date(envio.fecha_envio), "yyyy-MM-dd").includes(filterFecha)
+      : true
+    const matchEstado = (envio?.estado_envio || "").toLowerCase().includes(filterEstado.toLowerCase())
+
+    return matchFarmacia && matchModem && matchFecha && matchEstado
+  })
+
   const sortedEnvios = () => {
     if (!sortField) return filteredEnvios
 
@@ -143,17 +169,6 @@ const EnviosTable: React.FC = () => {
       }
     })
   }
-
-  const filteredEnvios = envios.filter((envio) => {
-    const matchFarmacia = (envio?.farmacia?.nombre || "").toLowerCase().includes(filterFarmacia.toLowerCase())
-    const matchModem = (envio?.modemPrincipal?.numero_serie || "").toLowerCase().includes(filterModem.toLowerCase())
-    const matchFecha = envio?.fecha_envio
-      ? format(new Date(envio.fecha_envio), "yyyy-MM-dd").includes(filterFecha)
-      : true
-    const matchEstado = (envio?.estado_envio || "").toLowerCase().includes(filterEstado.toLowerCase())
-
-    return matchFarmacia && matchModem && matchFecha && matchEstado
-  })
 
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
@@ -241,6 +256,27 @@ const EnviosTable: React.FC = () => {
 
   return (
     <>
+      {/* Modal para Editar Envío */}
+      <Modal show={showEditModal} onHide={handleCloseEdit} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="bi bi-pencil-square me-2"></i>
+            Editar Envío
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedEnvioId && (
+            <FormularioEditarEnvio
+              envioId={selectedEnvioId}
+              onClose={handleCloseEdit}
+              onSuccess={() => {
+                loadEnvios()
+              }}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
+
       <div className="d-flex align-items-center mb-3" style={{ color: "black" }}>
         <div className="pagetitle">
           <h1>Envíos de Módems</h1>
@@ -255,13 +291,7 @@ const EnviosTable: React.FC = () => {
           <Button title="Exportar a Excel" onClick={exportToExcel} className="btn me-2" variant="success">
             <Download className="me-1" /> Exportar
           </Button>
-          <Link
-            to="/CrearEnvio"
-            className="btn"
-            style={{ backgroundColor: "#f6952c", borderColor: "#f6952c", color: "#fff" }}
-          >
-            <i className="bi bi-plus-circle-fill me-2"></i> Nuevo Envío
-          </Link>
+          
         </div>
       </div>
 
@@ -355,36 +385,48 @@ const EnviosTable: React.FC = () => {
                         {envio?.modemPrincipal?.marca} - {envio?.modemPrincipal?.modelo}
                       </div>
                       <small className="text-muted">Serie: {envio?.modemPrincipal?.numero_serie}</small>
+                      {envio?.modemSecundario && (
+                        <div>
+                          <small className="text-info">
+                            + {envio.modemSecundario.marca} - {envio.modemSecundario.modelo}
+                          </small>
+                        </div>
+                      )}
                     </td>
                     <td>{envio?.fecha_envio ? format(new Date(envio.fecha_envio), "dd/MM/yyyy") : "N/A"}</td>
                     <td>${envio?.costo_envio?.toLocaleString("es-CO") ?? ""}</td>
                     <td>
-                      <Badge bg={envio?.estado_envio === "DEVUELTO" ? "success" : "warning"}>
+                      <Badge
+                        bg={
+                          envio?.estado_envio === "ENTREGADO"
+                            ? "success"
+                            : envio?.estado_envio === "DEVUELTO"
+                              ? "danger"
+                              : envio?.estado_envio === "EN CAMINO"
+                                ? "primary"
+                                : "warning"
+                        }
+                      >
                         {envio?.estado_envio || "Desconocido"}
                       </Badge>
                     </td>
                     <td>
                       <div className="d-flex justify-content-end btn-group">
-                        <Link
-                          to={`/DetalleEnvio/${envio?.id}`}
-                          className="btn btn-light btn-sm"
-                          style={{ backgroundColor: "#f8f9fa", color: "#212529", borderColor: "#f8f9fa" }}
-                        >
-                          <i className="bi bi-eye"></i>
-                        </Link>
-                        <Link
-                          to={`/EditarEnvio/${envio?.id}`}
+                        <button
                           className="btn btn-light btn-sm"
                           style={{ backgroundColor: "#ffb361", color: "#fff", borderColor: "#ffb361" }}
+                          onClick={() => handleShowEdit(envio?.id)}
+                          title="Editar envío"
                         >
                           <i className="bi bi-pencil"></i>
-                        </Link>
+                        </button>
                         {/* Solo mostrar el botón de eliminar para administradores */}
                         {isAdmin && (
                           <button
                             onClick={() => handleDelete(envio?.id)}
                             className="btn btn-light btn-sm"
                             style={{ backgroundColor: "#dc3545", color: "#fff", borderColor: "#dc3545" }}
+                            title="Eliminar envío"
                           >
                             <i className="bi bi-trash"></i>
                           </button>

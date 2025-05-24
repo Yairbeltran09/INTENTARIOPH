@@ -2,14 +2,15 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Badge, FormControl, Card, Button, Spinner } from "react-bootstrap"
+import { Badge, FormControl, Card, Button, Spinner, Modal } from "react-bootstrap"
 import Swal from "sweetalert2"
-import { Link } from "react-router-dom"
 import { getModems, deleteModems, updateModemStatus } from "../../servicios/modemService"
 import { getCurrentUser } from "../../servicios/authServices"
 import { Download } from "react-bootstrap-icons"
 import * as XLSX from "xlsx"
 import { format } from "date-fns"
+import FormularioCrearModem from "../FormulariosCrear/FormularioCrearM"
+import FormularioEditarModem from "../FormulariosEditar.tsx/FormularioEditarM"
 
 interface iModems {
   id: number
@@ -37,6 +38,11 @@ const ModemsTable: React.FC = () => {
   const itemsPerPage = 10
   const [currentUser, setCurrentUser] = useState<any>(null)
 
+  // Modales
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedModemId, setSelectedModemId] = useState<number | null>(null)
+
   // Filtros
   const [filterEstado, setFilterEstado] = useState<string>("")
   const [filterMarca, setFilterMarca] = useState<string>("")
@@ -49,6 +55,22 @@ const ModemsTable: React.FC = () => {
   // Estado para ordenamiento
   const [sortField, setSortField] = useState<string>("")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+
+  const handleShowCreate = () => setShowCreateModal(true)
+  const handleCloseCreate = () => {
+    setShowCreateModal(false)
+    loadModems() // Recargar modems al cerrar el modal de creación
+  }
+
+  const handleShowEdit = (modemId: number) => {
+    setSelectedModemId(modemId)
+    setShowEditModal(true)
+  }
+  const handleCloseEdit = () => {
+    setShowEditModal(false)
+    setSelectedModemId(null)
+    loadModems() // Recargar modems al cerrar el modal de edición
+  }
 
   useEffect(() => {
     // Obtener el usuario actual al cargar el componente
@@ -285,6 +307,40 @@ const ModemsTable: React.FC = () => {
 
   return (
     <>
+      {/* Modal para Crear Módem */}
+      <Modal show={showCreateModal} onHide={handleCloseCreate} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="bi bi-plus-circle me-2"></i>
+            Nuevo Módem
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormularioCrearModem onSuccess={handleCloseCreate} onClose={handleCloseCreate} />
+        </Modal.Body>
+      </Modal>
+
+      {/* Modal para Editar Módem */}
+      <Modal show={showEditModal} onHide={handleCloseEdit} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="bi bi-pencil-square me-2"></i>
+            Editar Módem
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedModemId && (
+            <FormularioEditarModem
+              modemId={selectedModemId}
+              onClose={handleCloseEdit}
+              onSuccess={() => {
+                loadModems()
+              }}
+            />
+          )}
+        </Modal.Body>
+      </Modal>
+
       <div className="d-flex align-items-center mb-3" style={{ color: "black" }}>
         <div className="pagetitle">
           <h1>Gestión de Módems</h1>
@@ -299,13 +355,13 @@ const ModemsTable: React.FC = () => {
           <Button title="Exportar a Excel" onClick={exportToExcel} className="btn me-2" variant="success">
             <Download className="me-1" /> Exportar
           </Button>
-          <Link
-            to="/CrearModem"
+          <Button
+            onClick={handleShowCreate}
             className="btn"
             style={{ backgroundColor: "#f6952c", borderColor: "#f6952c", color: "#fff" }}
           >
             <i className="bi bi-plus-circle-fill me-2"></i> Nuevo Módem
-          </Link>
+          </Button>
         </div>
       </div>
 
@@ -424,13 +480,13 @@ const ModemsTable: React.FC = () => {
                     </td>
                     <td>
                       <div className="d-flex justify-content-end btn-group">
-                        <Link
-                          to={`/EditarModem/${modem.id}`}
+                        <button
                           className="btn btn-light btn-sm"
                           style={{ backgroundColor: "#ffb361", color: "#fff", borderColor: "#ffb361" }}
+                          onClick={() => handleShowEdit(modem.id)}
                         >
                           <i className="bi bi-pencil"></i>
-                        </Link>
+                        </button>
 
                         {/* Botón para cambiar estado */}
                         <button
