@@ -1,18 +1,14 @@
 package com.pharmaser.bitacora.model;
 
 import jakarta.persistence.*;
-
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.sql.Date;
-import java.sql.Time;
 
 @Entity
 public class Reporte {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
 
     private Integer ano;
     private Integer mes;
@@ -31,8 +27,10 @@ public class Reporte {
     @Column(nullable = true)
     private Timestamp fecha_hora_fin;
 
+    // Cambiar de Time a String para permitir duraciones mayores a 24 horas
     @Column(nullable = true)
-    private Time duracion_incidente;
+    private String duracion_incidente;
+
     private String estado;
     private Boolean isDeleted = false;
 
@@ -40,23 +38,15 @@ public class Reporte {
     @JoinColumn(name = "id_motivo")
     private MotivoReporte motivo;
 
+    private String observacion;
 
+    // Getters y Setters
     public Boolean getIsDeleted() {
         return isDeleted;
     }
 
     public void setIsDeleted(Boolean isDeleted) {
-        isDeleted = isDeleted;
-    }
-
-    private String observacion;
-
-    public Integer getAno() {
-        return ano;
-    }
-
-    public void setAno(Integer ano) {
-        this.ano = ano;
+        this.isDeleted = isDeleted;
     }
 
     public String getObservacion() {
@@ -89,6 +79,14 @@ public class Reporte {
 
     public void setMes(Integer mes) {
         this.mes = mes;
+    }
+
+    public Integer getAno() {
+        return ano;
+    }
+
+    public void setAno(Integer ano) {
+        this.ano = ano;
     }
 
     public long getId() {
@@ -131,14 +129,14 @@ public class Reporte {
         this.farmacia = farmacia;
     }
 
-    public Time getDuracion_incidente() {
+    // Cambiar el tipo de retorno de Time a String
+    public String getDuracion_incidente() {
         return duracion_incidente;
     }
 
-    public void setDuracion_incidente(Time duracion_incidente) {
+    public void setDuracion_incidente(String duracion_incidente) {
         this.duracion_incidente = duracion_incidente;
     }
-
 
     public String getEstado() {
         return estado;

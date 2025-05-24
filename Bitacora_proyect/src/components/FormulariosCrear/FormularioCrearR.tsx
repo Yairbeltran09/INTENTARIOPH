@@ -116,6 +116,8 @@ const FormularioCrearR: React.FC<IFormularioCrearRProps> = ({ onSuccess }) => {
 
       // Combinar fecha con hora para crear fechas ISO completas
       const fechaBase = new Date(reporte.fecha)
+      const ano = fechaBase.getFullYear()
+      const mes = fechaBase.getMonth() + 1 // getMonth() devuelve 0-11, necesitamos 1-12
 
       let fechaHoraInicio = null
       if (reporte.fecha && reporte.fecha_hora_inicio) {
@@ -124,11 +126,22 @@ const FormularioCrearR: React.FC<IFormularioCrearRProps> = ({ onSuccess }) => {
         fechaHoraInicio.setHours(Number(horasInicio), Number(minutosInicio), 0, 0)
       }
 
+      // Preparar el objeto para enviar al backend
       const reporteFormateado = {
-        ...reporte,
-        fecha: reporte.fecha ? new Date(reporte.fecha).toISOString() : null,
-        fecha_hora_inicio: fechaHoraInicio ? fechaHoraInicio.toISOString() : null,
+        fecha: fechaBase, // Enviar como objeto Date
+        ano: ano,
+        mes: mes,
+        farmacia: reporte.farmacia, // Enviar el objeto completo
+        fecha_hora_inicio: fechaHoraInicio, // Enviar como objeto Date
+        fecha_hora_fin: null, // Nuevo reporte no tiene fecha fin
+        duracion_incidente: null, // Se calculará cuando se cierre
+        estado: "ABIERTO", // Siempre ABIERTO para reportes nuevos
+        motivo: reporte.motivo, // Enviar el objeto completo
+        observacion: reporte.observacion || "",
+        isDeleted: false,
       }
+
+      console.log("Datos a enviar:", JSON.stringify(reporteFormateado, null, 2))
 
       await createReporte(reporteFormateado)
 
@@ -136,6 +149,18 @@ const FormularioCrearR: React.FC<IFormularioCrearRProps> = ({ onSuccess }) => {
         icon: "success",
         title: "¡Éxito!",
         text: "Reporte creado correctamente",
+      })
+
+      // Limpiar el formulario
+      setReporte({
+        fecha: new Date().toISOString().split("T")[0],
+        farmacia: null,
+        fecha_hora_inicio: new Date().toTimeString().slice(0, 5),
+        fecha_hora_fin: "",
+        duracion_incidente: "",
+        estado: "ABIERTO",
+        motivo: null,
+        observacion: "",
       })
 
       // Limpiar el formulario o cerrar el modal
