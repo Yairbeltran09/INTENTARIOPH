@@ -25,11 +25,28 @@ public class UsuariosService {
         return usuariosRepository.findById(id).orElse(null);
     }
 
+    public Usuarios getUserByUsername(String username) {
+        return usuariosRepository.findByUsername(username).orElse(null);
+    }
+
     public Usuarios updateUser(Long id, Usuarios usuarios) {
         Usuarios existingUser = usuariosRepository.findById(id).orElse(null);
         if (existingUser != null) {
-            existingUser.setUsername(usuarios.getUsername());
-            existingUser.setPassword(usuarios.getPassword());
+            if (usuarios.getUsername() != null) {
+                existingUser.setUsername(usuarios.getUsername());
+            }
+            if (usuarios.getPassword() != null) {
+                existingUser.setPassword(usuarios.getPassword());
+            }
+            if (usuarios.getRole() != null) {
+                existingUser.setRole(usuarios.getRole());
+            }
+            if (usuarios.getFarmacia() != null) {
+                existingUser.setFarmacia(usuarios.getFarmacia());
+            }
+            if (usuarios.getStatus() != null) {
+                existingUser.setStatus(usuarios.getStatus());
+            }
             return usuariosRepository.save(existingUser);
         }
         return null;

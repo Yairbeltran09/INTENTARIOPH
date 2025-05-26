@@ -3,18 +3,14 @@ package com.pharmaser.bitacora.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-
 @Entity()
 @Table(name = "Usuarios")
 public class Usuarios {
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String username;
-
     private String password;
 
     @Column(updatable = false)
@@ -25,6 +21,11 @@ public class Usuarios {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Roles roles;
+
+    // Nueva relación con Farmacias para usuarios reportadores
+    @ManyToOne
+    @JoinColumn(name = "farmacia_id")
+    private Farmacias farmacia;
 
     @Column(columnDefinition = "boolean default true")
     private Boolean status;
@@ -40,6 +41,7 @@ public class Usuarios {
         updatedAt = LocalDateTime.now();
     }
 
+    // Getters y Setters
     public long getId() {
         return id;
     }
@@ -49,22 +51,18 @@ public class Usuarios {
     }
 
     public String getUsername() {
-
         return username;
     }
 
     public void setUsername(String username) {
-
         this.username = username;
     }
 
     public String getPassword() {
-
         return password;
     }
 
     public void setPassword(String password) {
-
         this.password = password;
     }
 
@@ -73,7 +71,6 @@ public class Usuarios {
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
-
         this.createdAt = createdAt;
     }
 
@@ -93,11 +90,30 @@ public class Usuarios {
         this.roles = roles;
     }
 
+    public Farmacias getFarmacia() {
+        return farmacia;
+    }
+
+    public void setFarmacia(Farmacias farmacia) {
+        this.farmacia = farmacia;
+    }
+
     public Boolean getStatus() {
         return status;
     }
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuarios{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", farmacia=" + (farmacia != null ? farmacia.getId() : "null") +
+                ", role=" + (roles != null ? roles.getId() : "null") +
+                ", status=" + status +
+                '}';
     }
 }

@@ -1,31 +1,33 @@
-import { Route, Routes, Navigate } from "react-router-dom";
-import Login from "../components/Login/Login";
-import { Reportes } from "../Paginas/Reportes";
-import { Proveedores } from "../Paginas/Proveedores";
-import PaginaFuncionarios from "../Paginas/Funcionarios";
-import { Farmacias } from "../Paginas/Farmacias";
-import { EditarProveedor } from "../Paginas/EditarProveedor";
-import { EditarFarmacia } from "../Paginas/EditarFarmacias";
-import { CrearReporte } from "../Paginas/CrearReportes";
-import { Modems } from "../Paginas/Modems";
-import { EnviosModems } from "../Paginas/EnvioModems";
-import ProtectedRoute from "../Rutas/ProtectedRoute";
-import { FormularioEnviarModems } from "../Paginas/FormularioEnviarModems";
-import PaginaPortatiles from "../Paginas/Portatiles";
-import PaginaMonitores from "../Paginas/Monitores";
-import PaginaTeclados from "../Paginas/Teclados";
-import PaginaMouse from "../Paginas/Mouse";
-import PaginaDiademas from "../Paginas/Diademas";
-import PaginaBaseRefrigeradora from "../Paginas/BaseRefrigeradora";
-import PaginaEntregaEquipos from "../Paginas/EntregaEquipos";
-import PaginaBajaEquipos from "../Paginas/BajaEquipos";
-import PaginaUsuarios from "../Paginas/PaginaUsuarios";
+import { Route, Routes, Navigate } from "react-router-dom"
+import Login from "../components/Login/Login"
+import { Reportes } from "../Paginas/Reportes"
+import { Proveedores } from "../Paginas/Proveedores"
+import PaginaFuncionarios from "../Paginas/Funcionarios"
+import { Farmacias } from "../Paginas/Farmacias"
+import { EditarProveedor } from "../Paginas/EditarProveedor"
+import { EditarFarmacia } from "../Paginas/EditarFarmacias"
+import { CrearReporte } from "../Paginas/CrearReportes"
+import { Modems } from "../Paginas/Modems"
+import { EnviosModems } from "../Paginas/EnvioModems"
+import ProtectedRoute from "../Rutas/ProtectedRoute"
+import { FormularioEnviarModems } from "../Paginas/FormularioEnviarModems"
+import PaginaPortatiles from "../Paginas/Portatiles"
+import PaginaMonitores from "../Paginas/Monitores"
+import PaginaTeclados from "../Paginas/Teclados"
+import PaginaMouse from "../Paginas/Mouse"
+import PaginaDiademas from "../Paginas/Diademas"
+import PaginaBaseRefrigeradora from "../Paginas/BaseRefrigeradora"
+import PaginaEntregaEquipos from "../Paginas/EntregaEquipos"
+import PaginaBajaEquipos from "../Paginas/BajaEquipos"
+import PaginaUsuarios from "../Paginas/PaginaUsuarios"
+import ReporteSimple from "../Paginas/ReporteUser"
 
 export const AppRutas = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
 
+      {/* Rutas para Administradores y Supervisores (roles 1 y 2) */}
       <Route
         path="/reportes"
         element={
@@ -43,6 +45,17 @@ export const AppRutas = () => {
         }
       />
 
+      {/* Ruta específica para usuarios reportadores (rol 3) */}
+      <Route
+        path="/mi-reporte"
+        element={
+          <ProtectedRoute allowedRoles={[3]}>
+            <ReporteSimple />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Rutas solo para Administradores (rol 1) */}
       <Route
         path="/farmacias"
         element={
@@ -76,6 +89,8 @@ export const AppRutas = () => {
           </ProtectedRoute>
         }
       />
+
+      {/* Rutas para Administradores y Supervisores (roles 1 y 2) */}
       <Route
         path="/modems"
         element={
@@ -125,8 +140,8 @@ export const AppRutas = () => {
           <ProtectedRoute allowedRoles={[1, 2]}>
             <PaginaMonitores />
           </ProtectedRoute>
-        }>
-      </Route>
+        }
+      ></Route>
 
       <Route
         path="/Teclados"
@@ -134,8 +149,8 @@ export const AppRutas = () => {
           <ProtectedRoute allowedRoles={[1, 2]}>
             <PaginaTeclados />
           </ProtectedRoute>
-        }>
-      </Route>
+        }
+      ></Route>
 
       <Route
         path="/Mouses"
@@ -143,8 +158,8 @@ export const AppRutas = () => {
           <ProtectedRoute allowedRoles={[1, 2]}>
             <PaginaMouse />
           </ProtectedRoute>
-        }>
-      </Route>
+        }
+      ></Route>
 
       <Route
         path="/Diademas"
@@ -152,8 +167,8 @@ export const AppRutas = () => {
           <ProtectedRoute allowedRoles={[1, 2]}>
             <PaginaDiademas />
           </ProtectedRoute>
-        }>
-      </Route>
+        }
+      ></Route>
 
       <Route
         path="/BasesRefrigeradoras"
@@ -161,8 +176,8 @@ export const AppRutas = () => {
           <ProtectedRoute allowedRoles={[1, 2]}>
             <PaginaBaseRefrigeradora />
           </ProtectedRoute>
-        }>
-      </Route>
+        }
+      ></Route>
 
       <Route
         path="/EngraEquipos"
@@ -170,8 +185,8 @@ export const AppRutas = () => {
           <ProtectedRoute allowedRoles={[1, 2]}>
             <PaginaEntregaEquipos />
           </ProtectedRoute>
-        }>
-      </Route>
+        }
+      ></Route>
 
       <Route
         path="/BajaEquipos"
@@ -179,8 +194,8 @@ export const AppRutas = () => {
           <ProtectedRoute allowedRoles={[1, 2]}>
             <PaginaBajaEquipos />
           </ProtectedRoute>
-        }>
-      </Route>
+        }
+      ></Route>
 
       <Route
         path="/usuarios"
@@ -188,11 +203,11 @@ export const AppRutas = () => {
           <ProtectedRoute allowedRoles={[1, 2]}>
             <PaginaUsuarios />
           </ProtectedRoute>
-        }>
-      </Route>
+        }
+      ></Route>
 
-
+      {/* Redirección por defecto basada en rol */}
       <Route path="/*" element={<Navigate to="/login" />} />
     </Routes>
-  );
-};
+  )
+}

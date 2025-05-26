@@ -369,25 +369,6 @@ const FormularioEditarR: React.FC<IFormularioEditarRProps> = ({ reporteId, onClo
           </Col>
         </Row>
 
-        {/* Mostrar información de duración si hay fechas */}
-        {reporte.fecha && reporte.hora_inicio_display && reporte.fecha_cierre && reporte.hora_fin_display && (
-          <Alert variant={duracionCalculada.includes("Error") ? "danger" : "info"} className="mb-4">
-            <Alert.Heading>
-              <i
-                className={`bi ${duracionCalculada.includes("Error") ? "bi-exclamation-triangle" : "bi-clock"} me-2`}
-              ></i>
-              Información de Duración
-            </Alert.Heading>
-            <p className="mb-0">
-              <strong>Inicio:</strong> {reporte.fecha} a las {reporte.hora_inicio_display}
-              <br />
-              <strong>Fin:</strong> {reporte.fecha_cierre} a las {reporte.hora_fin_display}
-              <br />
-              <strong>Duración:</strong> {duracionCalculada}
-            </p>
-          </Alert>
-        )}
-
         <Card className="mb-4">
           <Card.Header>
             <h5 className="mb-0">
